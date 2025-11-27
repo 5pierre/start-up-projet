@@ -1,0 +1,8 @@
+
+#ignore le snode_modules et les fichiers .env partout dans le projet
+**/.env
+**/node_modules/
+
+
+
+
