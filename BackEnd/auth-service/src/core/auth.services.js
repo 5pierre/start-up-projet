@@ -3,10 +3,8 @@ const jwt = require('jsonwebtoken');
 const { addUser, findUserByEmail } = require('../data/users'); // <-- remplacer createUser par addUser si besoin
 const fs = require('fs');
 const Key = process.env.JWT_SECRET;
-const loginAttempts = new Map();
 
-
-
+// REGISTER USER
 async function registerUser(req, res) {
   try {
     const { name, email, password, profileData } = req.body;
@@ -56,7 +54,15 @@ async function registerUser(req, res) {
       email: email 
     }, Key, { expiresIn: '10m' }); 
 
-    res.status(201).json({ token });
+    res.status(200).json({
+      token,
+      user: { 
+        id: adduser.id_user, 
+        name: adduser.name,
+        email: adduser.email,
+        role: adduser.role
+      }
+    });
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + " User registered successfully\n");
 
   } catch (err) {
@@ -70,8 +76,12 @@ async function registerUser(req, res) {
 async function loginUser(req, res) { 
   try {
     const { email, password } = req.body;
-//brute force protection(si un email est essayé plus de 5 fois en 10 minutes, bloquer pendant 15 minutes)
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
 
+    //ajouter limitation tentative de connexion brut force
+    //ajouter cookie Cookies avec attributs `HttpOnly`, `Secure`, `SameSite=Strict`- Timeout après 15-30 min d'inactivité
 
     const user = await findUserByEmail(email);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -97,14 +107,9 @@ async function loginUser(req, res) {
   } catch (err) {
     res.status(500).json({ error: 'Internal error '+ err }); 
   }
-//ajouter cookie Cookies avec attributs `HttpOnly`, `Secure`, `SameSite=Strict`- Timeout après 15-30 min d'inactivité
 
 };
 
 
-// LOGOUT
-async function logoutUser(req, res) {
-  
-}
 
-module.exports = { loginUser, registerUser, logoutUser };
+module.exports = { loginUser, registerUser };

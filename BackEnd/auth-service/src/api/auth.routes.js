@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, logoutUser} = require('../core/auth.services');
+const { registerUser, loginUser} = require('../core/auth.services');
 const { findUserById } = require('../data/users');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
@@ -15,7 +15,6 @@ const verifyToken = (token) => {
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/logout', logoutUser);
 
 
 // Get User Profile (Protected)
