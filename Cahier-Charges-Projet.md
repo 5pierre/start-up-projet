@@ -95,16 +95,16 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 **Fonctionnalités requises :**
 
-- [✅ ] **Toutes les requêtes SQL utilisent des requêtes préparées**
+- [✅] **Toutes les requêtes SQL utilisent des requêtes préparées**
   - OK :  `SELECT * FROM users WHERE id = ?` (paramètre séparé)
   - NO : `SELECT * FROM users WHERE id = $userId` (concaténation)
   - Ou : Utiliser un ORM (Doctrine, Eloquent, Mongoose, SQLAlchemy)
 
-- [ ] **Une fonctionnalité permettant aux utilisateurs de poster du texte** (commentaire, bio, titre, etc.)
+- [✅] **Une fonctionnalité permettant aux utilisateurs de poster du texte** (commentaire, bio, titre, etc.)
   - Tentative : Poster `<script>alert('XSS')</script>`
   - Résultat : Le script NE S'EXÉCUTE PAS, on voit le texte brut ou échappé
 
-- [ ] **Validation des entrées** (côté serveur)
+- [✅] **Validation des entrées** (côté serveur)
   - Email : Format valide
   - Nombres : Seulement des chiffres si attendu
   - Longueur : Min/Max respectés
@@ -120,11 +120,11 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 **Fonctionnalités requises :**
 
-- [ ] **Formulaire d'inscription minimal** (Minimisation)
+- [✅] **Formulaire d'inscription minimal** (Minimisation)
   - Champs collectés : Email, Mot de passe, Nom **SEULEMENT**
   - **Interdiction** : Date de naissance, Numéro Sécu, Adresse complète (sauf si justifiée pour livraison)
 
-- [ ] **Consentement explicite** (non pré-coché)
+- [✅] **Consentement explicite** (non pré-coché)
   - Case à cocher : `<input type="checkbox" name="consent">`
   - Pas d'attribut `checked` (doit être décochée par défaut)
   - Text : "J'accepte que mes données soient utilisées pour [usage précis]"
@@ -146,7 +146,7 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 ---
 
-### Protection CSRF (si applicable)
+### Protection CSRF (si applicable) 
 
 **Fonctionnalités requises :**
 
@@ -165,9 +165,10 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 ---
 
-### Sécurité des Fichiers (si upload)
+### Sécurité des Fichiers (si upload) 
 
-**Fonctionnalités requises** *(SEULEMENT si votre projet inclut un upload de fichier)*:
+- pas concerné
+<!-- **Fonctionnalités requises** *(SEULEMENT si votre projet inclut un upload de fichier)*:
 
 - [ ] **Validation d'extension** 
   - Accepté : `.jpg`, `.png`, `.pdf` uniquement
@@ -184,7 +185,7 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 **Preuves requises pour validation :**
 - Tentative upload d'un `.exe` → Rejet (capture écran)
-- Capture écran montrant le fichier renommé en UUID dans la base ou le dossier
+- Capture écran montrant le fichier renommé en UUID dans la base ou le dossier -->
 
 ---
 
@@ -210,7 +211,7 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 **Fonctionnalités requises :**
 
-- [ ] **Fichier `.env`** en `.gitignore` (jamais push de secrets)
+- [✅] **Fichier `.env`** en `.gitignore` (jamais push de secrets)
   - Variables : `DB_PASSWORD`, `API_KEY`, `JWT_SECRET`, etc.
 
 - [✅] **Fichier `.env.example`** dans le repo
@@ -280,6 +281,16 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 
 ---
+
+
+
+
+
+
+
+
+
+
 
 ## Exemples de Projets Validés
 

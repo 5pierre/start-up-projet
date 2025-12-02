@@ -13,13 +13,22 @@ async function registerUser(req, res) {
     if (!email || !password || !name) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
+    if (password.length < 12 || password.length > 50) {
+      return res.status(400).json({ error: "Password must be between 12 and 50 characters long" });
+    }
+    if ( email.length < 6 || email.length > 320) {
+      return res.status(400).json({ error: "Email must be between 6 and 320 characters long" });
+    }
 
-    if (password.length < 12) {
-      return res.status(400).json({ error: "Password must be at least 12 characters long" });
+    //Longueur : Min/Max respectés pour name, email, password, profileData
+    if (name.length < 3 || name.length > 50) {
+      return res.status(400).json({ error: "Name must be between 3 and 50 characters long" });
+    }
+    if (profileData && profileData.length > 500) {
+      return res.status(400).json({ error: "Profile data must be less than 500 characters long" });
     }
 
     const hasUpperCase = /[A-Z]/.test(password);
@@ -41,7 +50,6 @@ async function registerUser(req, res) {
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + " User already exists, aborting registration\n");
     return res.status(400).json({ error: "invalid credentials" });
     }
-
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + " User does not exist, proceeding with registration\n");
 
     const hashed = await bcrypt.hash(password, 10);
@@ -79,7 +87,8 @@ async function loginUser(req, res) {
     if (!email || !password) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
-
+    
+    //solution requise logout : Créer une route qui envoie un cookie vide expirant immédiatement (res.clearCookie('jwt')).
     //ajouter cookie Cookies avec attributs `HttpOnly`, `Secure`, `SameSite=Strict`- Timeout après 15-30 min d'inactivité
     //token stocké dans le cookie ? 
 
