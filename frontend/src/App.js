@@ -2,6 +2,7 @@
 import StoryRead from "./components/StoryRead";
 import RegisterPage from "./components/RegisterPage";
 import AdminPage from "./components/AdminPage";
+import MentionsLegales from "./components/MentionsLegales";
 import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import "./App.css";
 
@@ -20,6 +21,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<StoryRead />} />
+        <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>

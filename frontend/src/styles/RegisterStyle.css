@@ -112,22 +112,22 @@
   }
 
 .story-textarea {
-  width: 100%;             /* prend 80% de la largeur du parent */
-  margin: 20px auto;      /* centré horizontalement avec un peu d'espace en haut et bas */
-  display: block;         /* nécessaire pour que margin auto fonctionne */
-  padding: 10px;          /* espace intérieur */
-  border-radius: 8px;     /* coins arrondis */
-  border: 1px solid #ccc; /* bordure douce */
-  font-size: 16px;         /* texte lisible */
+  width: 100%;  
+  margin: 20px auto; 
+  display: block; 
+  padding: 10px; 
+  border-radius: 8px; 
+  border: 1px solid #ccc; 
+  font-size: 16px;  
   font-family: Arial, sans-serif;
-  resize: none;           /* impossible de redimensionner */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* petit effet d'ombre */
-  transition: border-color 0.2s, box-shadow 0.2s; /* effet smooth au focus */
+  resize: none; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .story-textarea:focus {
-  outline: none;           /* enlève le contour par défaut */
-  border-color: #4a90e2;  /* bordure bleue au focus */
+  outline: none; 
+  border-color: #4a90e2; 
   box-shadow: 0 2px 10px rgba(74,144,226,0.3);
 }
 
@@ -144,6 +144,46 @@
 
 .story-item:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.legal-content {
+    width: 100%; 
+    padding: 20px 0;
+    line-height: 1.8;
+    color: #444;
+    font-size: 15px;
+}
+
+.legal-content h2, .legal-content h3 {
+    font-family: Poppins-Bold, sans-serif;
+    color: #333;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.footer{
+  width: 100%; 
+  min-height: 50px; 
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  margin-top: 40px; 
+  padding: 15px 0;
+  background-color: #F5F7FA; 
+  border-top: 1px solid #E2E8F0;
+}
+
+.footer a.footer-mentions {
+    font-size: 14px;
+    color: #718096; 
+    text-decoration: none;
+    font-family: Poppins-Regular;
+    transition: color 0.3s;
+}
+
+.footer a.footer-mentions:hover {
+    color: #4CAF50;
+    text-decoration: underline;
 }
 
   .input100 {

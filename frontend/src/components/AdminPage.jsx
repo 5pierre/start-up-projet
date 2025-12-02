@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Footer from './Footer';
 import '../styles/RegisterStyle.css';
 
 export default function AdminPage() {
@@ -91,6 +92,7 @@ export default function AdminPage() {
                     <p>Aucun utilisateur trouvé.</p>
                 )}
             </div>
+            <Footer />
         </div>
     );
 }

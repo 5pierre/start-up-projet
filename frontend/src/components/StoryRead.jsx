@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryWrite from "./StoryWrite";
 import '../styles/RegisterStyle.css';
+import Footer from './Footer';
 
 
 export default function StoryRead() {
@@ -61,6 +62,7 @@ export default function StoryRead() {
       <div className="wrap-login100-write" style={{ flexDirection: 'column', alignItems: 'center' }}>
             <StoryWrite onSave={addStory} />
       </div>
+      <Footer />
     </div>
   );
 }

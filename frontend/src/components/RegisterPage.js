@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/RegisterStyle.css';
+import Footer from './Footer';
 
 const RegisterPage = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -219,6 +220,23 @@ const RegisterPage = () => {
               </button>
             </div>
 
+            {!isLoginMode && (
+              <div className="text-center p-t-12">
+                <span className="check">
+                  <input 
+                      type="checkbox" 
+                      name="termsAccepted" 
+                      id="termsAccepted"
+                      required 
+                    />
+                    <label htmlFor="termsAccepted" className="txt1" style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                        J'accepte que mes données soient utilisées pour la création et la gestion de mon compte, la publication de mes histoires et l'accès aux fonctionnalités de lecture du site.
+                    </label>
+                </span>
+              </div>
+            )}
+
+
             <div className="text-center p-t-12">
               <span className="txt1">
                 {isLoginMode ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
@@ -231,6 +249,7 @@ const RegisterPage = () => {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
