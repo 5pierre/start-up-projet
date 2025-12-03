@@ -30,7 +30,7 @@ async function createStory(id_user, content) {
       `INSERT INTO stories(id_user, content, created_at) 
        VALUES($1, $2, NOW()) 
        RETURNING id_story, id_user, content, created_at`,
-      [id_user, content]
+      [id_user, content ]
     );
     return result.rows[0];
   } catch (err) {

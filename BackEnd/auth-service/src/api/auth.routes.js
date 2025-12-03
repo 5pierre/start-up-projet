@@ -55,37 +55,25 @@ router.delete('/admin/deleteuser/:id', async (req, res) => {
     if (!token) return res.status(403).send("Access denied");
 
     try {
-     const decoded = verifyToken(token);
-        
-        // 1. D'ABORD : Qui demande ?
-        const requesterInfo = await findUserByEmail(decoded.email);
-        // 2. SÉCURITÉ IMMÉDIATE : Vérification du Rôle
-        // On vérifie le token ET la base de données. 
-        // Si pas admin, on arrête tout de suite. Aucun accès à la suite du code.
-        // (Section 3.2)
-        if (decoded.role !== 'admin' || requesterInfo.role !== 'admin') {
+        const decoded = verifyToken(token);
+        const reqInfo = await findUserByEmail(decoded.email);
+        if (decoded.role !== 'admin' && reqInfo.role !== 'admin') {
             return res.status(403).send("invalid credentials"); 
         }
-        // 3. Validation de l'entrée (ID)
         const idToDelete = parseInt(req.params.id);
         if (!idToDelete) {
             return res.status(400).send("Invalid ID");
         }
-        // 4. ENSUITE SEULEMENT : On va chercher la cible
-        // Maintenant, on sait que c'est un admin qui demande, donc il a le droit de savoir si l'user existe.
         const userToDelete = await findUserById(idToDelete);
         if (!userToDelete) {
             return res.status(404).send("User not found");
         }
-        // 5. Règle métier : Un admin ne mange pas un autre admin
         if (userToDelete.role === 'admin') {
             return res.status(403).send("Cannot delete another admin");  
         }
-        // 6. Action
         await deleteUserById(idToDelete);
         res.status(200).json("User deleted successfully");
         
-
     } catch (err) {
         fs.appendFileSync('../../Log.txt', `${new Date().toISOString()} - Error: ${err.message}\n`);
         res.status(401).send("Invalid token");

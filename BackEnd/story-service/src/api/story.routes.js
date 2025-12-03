@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const Key = process.env.JWT_SECRET;
-const { getStories, createStory } = require('../data/story');
+// const jwt = require('jsonwebtoken');
+// const fs = require('fs');
+// const Key = process.env.JWT_SECRET;
+// const { getStories, createStory } = require('../data/story');
 const { getAllStories, createNewStory } = require('../core/story.services');
 
-const verifyToken = (token) => {
-    if (!token) throw new Error("No token provided");
-    const parts = token.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Bearer") throw new Error("Bad token format"); 
-    return jwt.verify(parts[1], Key);
-};
+// const verifyToken = (token) => {
+//     if (!token) throw new Error("No token provided");
+//     const parts = token.split(" ");
+//     if (parts.length !== 2 || parts[0] !== "Bearer") throw new Error("Bad token format"); 
+//     return jwt.verify(parts[1], Key);
+// };
 
 router.get('/stories', getAllStories);
-router.post('/stories', verifyToken, createNewStory);
+router.post('/stories', createNewStory);
 
 // router.get('/stories', async (req, res) => {
 //    try {

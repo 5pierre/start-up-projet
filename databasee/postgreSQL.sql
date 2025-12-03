@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS stories (
     id_story SERIAL PRIMARY KEY,
     content VARCHAR(5000) NOT NULL, 
     id_user INT NOT NULL, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user
         FOREIGN KEY (id_user)

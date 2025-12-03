@@ -1,5 +1,18 @@
 const { getStories, createStory } = require('../data/story');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const Key = process.env.JWT_SECRET;
+
+
+
+const verifyToken = (token) => {
+    if (!token) throw new Error("No token provided");
+    const parts = token.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Bearer") throw new Error("Bad token format"); 
+    return jwt.verify(parts[1], Key);
+};
+
+
 
 // GET ALL STORIES
 async function getAllStories(req, res) {
@@ -21,9 +34,12 @@ async function getAllStories(req, res) {
 
 // CREATE STORY
 async function createNewStory(req, res) {
+const token = req.headers.authorization;
+if (!token) return res.status(403).send("Access denied");
   try {
     const { content } = req.body;
-    const id_user = req.user.id_user;
+    // const id_user = req.user.id_user;
+    const decodedToken = verifyToken(token);
 
     if (!content || typeof content !== 'string' || content.trim().length === 0) {
       return res.status(400).json({ error: "Story content is required and must be a non-empty string" });
@@ -36,7 +52,7 @@ async function createNewStory(req, res) {
     if (content.length < 10) {
       return res.status(400).json({ error: "Story is too short (min 10 characters)" });
     }
-
+    const id_user = decodedToken.id;
     const newStory = await createStory(id_user, content);
 
     res.status(201).json({
