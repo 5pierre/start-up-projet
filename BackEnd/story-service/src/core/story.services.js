@@ -38,6 +38,8 @@ const token = req.headers.authorization;
 if (!token) return res.status(403).send("Access denied");
   try {
     const { content } = req.body;
+    console.log("Received story content:", content);
+    console.log(": ", req);
     // const id_user = req.user.id_user;
     const decodedToken = verifyToken(token);
 
