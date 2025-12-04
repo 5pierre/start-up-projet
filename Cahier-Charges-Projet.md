@@ -42,12 +42,12 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
   - **Interdiction absolue** : MD5, SHA1, SHA256 simple, ou texte clair
   - Vérifiable : Query `SELECT password FROM users LIMIT 1` montre un hash
 
-- [ ] **Session & Cookies**
+- [✅] **Session & Cookies**
   - Authentification avec session serveur (ou JWT si API)
   - Cookies avec attributs `HttpOnly`, `Secure`, `SameSite=Strict`
   - Timeout après 15-30 min d'inactivité
 
-- [👍] **Page de déconnexion (`/logout`)**
+- [✅] **Page de déconnexion (`/logout`)**
   - Détruit vraiment la session côté serveur
   - Redirection vers login
 
@@ -71,15 +71,15 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 - [✅] **Stockage du rôle en base de données**
   - Colonne `role` ou `roles` dans la table `users`
 
-- [ ] **Au moins une page/fonctionnalité Admin-only**
+- [✅] **Au moins une page/fonctionnalité Admin-only**
   - `/admin/dashboard` visible SEULEMENT pour Admin
   - Ou : `/admin/users` pour gérer les utilisateurs
 
-- [] **Vérification côté serveur** (pas juste front-end)
+- [✅] **Vérification côté serveur** (pas juste front-end)
   - Tentative accès `/admin` en tant qu'User → **Rejet (403 ou Redirect)**
   - Code serveur vérifie `if (user.role !== 'ADMIN') { deny(); }`
 
-- [] **Impossible de modifier l'ID utilisateur pour voir une autre personne** (IDOR)
+- [✅] **Impossible de modifier l'ID utilisateur pour voir une autre personne** (IDOR)
   - Si on accède `/profil/user/5`, c'est mon compte (user 5)
   - Si on change `/profil/user/99`, rejet (ce compte ne m'appartient pas)
 
@@ -217,7 +217,7 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 - [✅] **Fichier `.env.example`** dans le repo
   - Montre les variables requises SANS les valeurs
 
-- [ ] **Aucun secret en clair dans le code source**
+- [👍] **Aucun secret en clair dans le code source**
   - Vérifier : `grep -r "password\|api_key\|secret" src/` (doit être vide)
   - Vérifier : `git log` ne contient pas de secrets anciens
 
@@ -260,7 +260,7 @@ Vous allez créer une **application Web complète** de votre choix (e-commerce, 
 
 **Fonctionnalités requises :**
 
-- [ ] **Audit des dépendances exécuté**
+- [👍] **Audit des dépendances exécuté**
   - `npm audit` (Node) → Zéro vulnérabilités "High" ou "Critical"
   - `composer audit` (PHP) → Zéro vulnérabilités critiques
   - `pip check` (Python) → Zéro vulnérabilités

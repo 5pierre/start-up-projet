@@ -131,9 +131,8 @@ async function loginUser(req, res) {
 
 };
 
-// CREATE INITIAL ADMIN USER IF NOT EXISTS
 
-createInitialAdmin(); // doit etre appelé une seule fois au démarrage du service
+await createInitialAdmin(); // doit etre appelé une seule fois au démarrage du service
 
 async function createInitialAdmin() {
   try {
