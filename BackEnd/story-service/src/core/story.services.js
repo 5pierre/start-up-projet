@@ -50,7 +50,7 @@ async function createNewStory(req, res) {
         message: "Story created successfully",
         story: newStory
       });
-      fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Story created successfully by user " + id_user + "\n");
+      fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Story created successfully\n");
 
   } catch (err) {
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error creating story: " + err + "\n");
