@@ -32,8 +32,8 @@ const RegisterPage = () => {
 
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 
     const typesCount = [hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar].filter(Boolean).length;
 
@@ -100,6 +100,7 @@ const RegisterPage = () => {
       console.error('Erreur API:', err.response?.data || err.message);
     }
   };
+
 
  return (
     <div className="limiter">
@@ -193,7 +194,7 @@ const RegisterPage = () => {
                   <li style={{ color: form.password.length >= 12 ? '#4CAF50' : '#666' }}>
                     Minimum 12 caractères
                   </li>
-                  <li style={{ color: (/[A-Z]/.test(form.password) && /[a-z]/.test(form.password) && (/[0-9]/.test(form.password) || /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password))) || (/[A-Z]/.test(form.password) && /[0-9]/.test(form.password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password)) || (/[a-z]/.test(form.password) && /[0-9]/.test(form.password) && /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(form.password)) ? '#4CAF50' : '#666' }}>
+                  <li style={{ color: (/[A-Z]/.test(form.password) && /[a-z]/.test(form.password) && (/\d/.test(form.password) || /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(form.password))) || (/[A-Z]/.test(form.password) && /\d/.test(form.password) && /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(form.password)) || (/[a-z]/.test(form.password) && /\d/.test(form.password) && /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(form.password)) ? '#4CAF50' : '#666' }}>
                     Au moins 3 types : majuscules, minuscules, chiffres, spéciaux
                   </li>
                 </ul>

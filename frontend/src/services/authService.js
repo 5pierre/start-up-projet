@@ -4,12 +4,7 @@ import axios from 'axios';
 export const checkAdminAccess = () => {
     const userRole = localStorage.getItem('userRole');
     
-    if (userRole !== 'admin') {
-      return false;
-    }
-    
-    
-    return true;
+    return userRole === 'admin';
   };
   
 export const logout = async () => {

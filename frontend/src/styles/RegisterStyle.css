@@ -26,7 +26,7 @@
   }
   
   a {
-    font-family: Poppins-Regular;
+    font-family: 'Poppins-Regular', sans-serif;
     font-size: 14px;
     color: #666;
     transition: all 0.4s;
@@ -39,7 +39,7 @@
   input, textarea, button {
     outline: none;
     border: none;
-    font-family: Poppins-Regular;
+    font-family: 'Poppins-Regular', sans-serif;
   }
   input::placeholder, textarea::placeholder {
     color: #999;
@@ -97,7 +97,7 @@
     width: 290px;
   }
   .login100-form-title {
-    font-family: Poppins-Bold;
+    font-family: 'Poppins-Bold', sans-serif;
     font-size: 24px;
     color: #333;
     text-align: center;
@@ -177,7 +177,7 @@
     font-size: 14px;
     color: #718096; 
     text-decoration: none;
-    font-family: Poppins-Regular;
+    font-family: 'Poppins-Regular', sans-serif;
     transition: color 0.3s;
 }
 
@@ -187,7 +187,7 @@
 }
 
   .input100 {
-    font-family: Poppins-Medium;
+    font-family: 'Poppins-Medium', sans-serif;
     font-size: 15px;
     color: #666;
     background: #e6e6e6;
@@ -242,14 +242,15 @@
     padding-top: 20px;
   }
   .login100-form-btn {
-    font-family: Montserrat-Bold;
+    font-family: 'Montserrat-Bold', sans-serif;
     font-size: 15px;
+    font-weight: bold;
     color: #fff;
     text-transform: uppercase;
     width: 100%;
     height: 50px;
     border-radius: 25px;
-    background: #57b846;
+    background: #3a8c2e;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -260,14 +261,15 @@
   }
 
   .login100-form-btn-logout {
-    font-family: Montserrat-Bold;
+    font-family: 'Montserrat-Bold', sans-serif;
     font-size: 15px;
+    font-weight: bold;
     color: #fff;
     text-transform: uppercase;
     width: 30%;
     height: 50px;
     border-radius: 25px;
-    background: #57b846;
+    background: #3a8c2e;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -316,7 +318,7 @@
   }
   .alert-validate::after {
     content: "\f06a";
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     position: absolute;
     right: 13px;
     top: 50%;
@@ -346,7 +348,7 @@
   }
   
   .home-btn {
-    font-family: Poppins-Medium;
+    font-family: 'Poppins-Medium', sans-serif;
     font-size: 16px;
     color: #fff;
     background-color: rgba(0,0,0,0.3);
@@ -371,15 +373,15 @@
 .custom-calendar {
   border: none;
   border-radius: 10px;
-  font-family: Poppins-Regular;
+  font-family: Poppins-Regular, sans-serif;
   width: 100%;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .delete-btn {
-  font-family: Poppins-Medium;
+  font-family: 'Poppins-Medium', sans-serif;
   font-size: 14px;
-  background-color: #ff4d4d;
+  background-color: #d60000;
   color: white;
   border: none;
   border-radius: 20px;
