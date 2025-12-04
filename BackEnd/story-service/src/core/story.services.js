@@ -1,5 +1,5 @@
 const { getStories, createStory } = require('../data/story');
-const fs = require('fs');
+const fs = require('node:fs');
 const jwt = require('jsonwebtoken');
 const Key = process.env.JWT_SECRET;
 
@@ -34,37 +34,36 @@ async function getAllStories(req, res) {
 
 // CREATE STORY
 async function createNewStory(req, res) {
-const token = req.headers.authorization;
-if (!token) return res.status(403).send("Access denied");
-  try {
-    const { content } = req.body;
-    // const id_user = req.user.id_user;
-    const decodedToken = verifyToken(token);
+  const token = req.headers.authorization;
+  if (!token) return res.status(403).send("Access denied");
+    try {
+      const { content } = req.body;
+      const decodedToken = verifyToken(token);
 
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
-      return res.status(400).json({ error: "Story content is required and must be a non-empty string" });
+      if (!content || typeof content !== 'string' || content.trim().length === 0) {
+        return res.status(400).json({ error: "Story content is required and must be a non-empty string" });
+      }
+
+      if (content.length > 5000) {
+        return res.status(400).json({ error: "Story is too long (max 5000 characters)" });
+      }
+
+      if (content.length < 10) {
+        return res.status(400).json({ error: "Story is too short (min 10 characters)" });
+      }
+      const id_user = decodedToken.id;
+      const newStory = await createStory(id_user, content);
+
+      res.status(201).json({
+        message: "Story created successfully",
+        story: newStory
+      });
+      fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Story created successfully by user " + id_user + "\n");
+
+    } catch (err) {
+      fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error creating story: " + err + "\n");
+      res.status(500).json({ error: "Internal error while creating story" });
     }
-
-    if (content.length > 5000) {
-      return res.status(400).json({ error: "Story is too long (max 5000 characters)" });
-    }
-
-    if (content.length < 10) {
-      return res.status(400).json({ error: "Story is too short (min 10 characters)" });
-    }
-    const id_user = decodedToken.id;
-    const newStory = await createStory(id_user, content);
-
-    res.status(201).json({
-      message: "Story created successfully",
-      story: newStory
-    });
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Story created successfully by user " + id_user + "\n");
-
-  } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error creating story: " + err + "\n");
-    res.status(500).json({ error: "Internal error while creating story" });
-  }
 }
 
 module.exports = { getAllStories, createNewStory };
