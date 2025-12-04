@@ -40,8 +40,8 @@ async function createNewStory(req, res) {
         return res.status(400).json({ error: "Story is too long (max 5000 characters)" });
       }
 
-      if (content.length < 10) {
-        return res.status(400).json({ error: "Story is too short (min 10 characters)" });
+      if (content.length < 5) {
+        return res.status(400).json({ error: "Story is too short (min 5 characters)" });
       }
       const id_user = decodedToken.id;
       const newStory = await createStory(id_user, content);
