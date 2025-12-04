@@ -17,10 +17,8 @@ const loginLimiter = rateLimit({
 });
 
 const verifyToken = (token) => {
-    if (!token) throw new Error("No token provided");
-    const parts = token.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Bearer") throw new Error("Bad token format"); 
-    return jwt.verify(parts[1], Key);
+    if (!token) throw new Error("Access denied");
+    return jwt.verify(token, Key);
 };
 
 router.post('/register', registerUser);

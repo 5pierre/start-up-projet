@@ -12,12 +12,6 @@ const COOKIE_SETTING = {
   maxAge: 15 * 60 * 1000 // 15 minutes
 };  
 
-// const verifyToken = (token) => {
-//     if (!token) throw new Error("No token provided");
-//     const parts = token.split(" ");
-//     if (parts.length !== 2 || parts[0] !== "Bearer") throw new Error("Bad token format"); 
-//     return jwt.verify(parts[1], Key);
-// };
 
 // REGISTER USER
 async function registerUser(req, res) {
