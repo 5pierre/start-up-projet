@@ -30,7 +30,7 @@ export default function AdminPage() {
             if (!response.ok) {
                 // Tente de lire le corps de la réponse pour une erreur plus détaillée
                 const errorText = await response.text();
-                throw new Error(`Erreur lors de la récupération des utilisateurs: ${response.status} - ${errorText}`);
+                throw new Error(`vous n'avez pas la permission d'accéder à cette ressource: ${errorText}`);
             }
 
             const data = await response.json();
