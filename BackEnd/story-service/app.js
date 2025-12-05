@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const storyRoutes = require('./src/api/story.routes'); 
 const cookieParser = require('cookie-parser');
-
+const helmet = require('helmet');
 const app = express();
 
 
@@ -15,6 +15,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
 
 app.set('trust proxy', 1); 
 
