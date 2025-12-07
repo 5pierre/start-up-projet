@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { postStories } from "../services/storyService";
 
 function StoryWrite({ onSave }) {
+  const [userId, setUserId] = useState(null);
   const [form, setForm] = useState({
     textarea: '',
   });
@@ -9,6 +10,15 @@ function StoryWrite({ onSave }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        setUserId(storedUserId);
+    }, []);
+
+    if (!userId) {
+    return null;
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

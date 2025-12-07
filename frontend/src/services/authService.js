@@ -18,6 +18,6 @@ export const logout = async () => {
       localStorage.removeItem('userId');
       localStorage.removeItem('userName');
       localStorage.removeItem('userRole');
-      window.location.href = '/auth'; 
+      window.location.href = '/register';
     }
   };

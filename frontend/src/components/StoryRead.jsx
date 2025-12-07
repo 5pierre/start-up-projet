@@ -4,6 +4,7 @@ import StoryWrite from "./StoryWrite";
 import '../styles/RegisterStyle.css';
 import Footer from './Footer';
 import { getStories } from '../services/storyService';
+import { logout } from '../services/authService';
 import UserProfile from './UserProfile';
 
 
@@ -37,12 +38,8 @@ export default function StoryRead() {
     fetchStories();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userRole');
-    setIsAuthenticated(false);
-    navigate('/register');
+  const handleLogout = async () => {
+    await logout(); 
   };
 
   const handleAuthClick = () => {
@@ -94,7 +91,9 @@ export default function StoryRead() {
         </div>
       </div>
       <div className="wrap-login100-write" style={{ flexDirection: 'column', alignItems: 'center' }}>
-            <StoryWrite onSave={addStory} />
+        {isAuthenticated && ( 
+          <StoryWrite onSave={addStory} />
+        )}        
       </div>
       <Footer />
     </div>

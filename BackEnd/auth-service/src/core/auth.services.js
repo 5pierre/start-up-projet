@@ -140,6 +140,9 @@ async function createInitialAdmin() {
     const adminEmail = process.env.ADMIN_email;
     const adminPassword = process.env.ADMIN_Password;
     const adminProfileData = process.env.ADMIN_profileData;
+    // ********** AJOUTEZ CETTE LIGNE **********
+    console.log(`ATTEMPTING ADMIN CREATION: ${adminEmail} (Pwd Length: ${adminPassword ? adminPassword.length : 'N/A'})`); 
+    // *****************************************
     const existingAdmin = await findUserByEmail(adminEmail);
     if (existingAdmin) {
       fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Admin user already exists, skipping creation\n");

@@ -230,7 +230,7 @@
 
 - [ ] **Token généré à chaque page** (ou au moins unique par session)
 
-- [ ] **Validation stricte** : Un token invalide = rejet de la requête
+- [✅] **Validation stricte** : Un token invalide = rejet de la requête
 
 **Preuves attendues :**
 - Inspect du formulaire montrant le champ CSRF
@@ -263,7 +263,7 @@
 
 ### 6.1 Minimisation des données
 
-- [ ] **Formulaire d'inscription minimal** : Seulement Email, Mot de passe, Nom (et rien de plus sans justification)
+- [✅] **Formulaire d'inscription minimal** : Seulement Email, Mot de passe, Nom (et rien de plus sans justification)
   - **Interdiction** : Date de naissance, Numéro de Sécu, Adresse complète (sauf si nécessaire pour livraison)
 
 - [ ] **Justification documentée** : Pourquoi chaque champ est collecté
@@ -276,12 +276,12 @@
 
 ### 6.2 Consentement explicite
 
-- [ ] **Case à cocher pour consentement** (NON pré-cochée)
+- [✅] **Case à cocher pour consentement** (NON pré-cochée)
   - `<input type="checkbox" name="consent" required>` (pas de `checked`)
 
-- [ ] **Texte clair du consentement** : "J'accepte que mes données soient utilisées pour [usage précis]"
+- [✅] **Texte clair du consentement** : "J'accepte que mes données soient utilisées pour [usage précis]"
 
-- [ ] **Impossible d'envoyer le formulaire sans cocher** : Validation HTML `required` + serveur
+- [✅] **Impossible d'envoyer le formulaire sans cocher** : Validation HTML `required` + serveur
 
 **Preuves attendues :**
 - Capture écran montrant la case décochée par défaut
@@ -292,7 +292,7 @@
 
 ### 6.3 Mentions légales & Politique de confidentialité
 
-- [ ] **Page de conformité accessible** : Lien visible dans le footer (`/legal`, `/privacy`, etc.)
+- [✅] **Page de conformité accessible** : Lien visible dans le footer (`/legal`, `/privacy`, etc.)
 
 - [ ] **Contenu minimal**
   - Qui gère le site (nom, adresse)
@@ -301,7 +301,7 @@
   - Durée de conservation
   - Droits des utilisateurs (accès, modification, suppression, portabilité)
 
-- [ ] **Lien dans le footer** : Visible sur toutes les pages
+- [✅] **Lien dans le footer** : Visible sur toutes les pages
 
 **Preuves attendues :**
 - Capture écran du lien dans le footer
@@ -334,8 +334,8 @@
 ### 7.2 Sécurité des cookies (redondance avec section 2.3)
 
 - [ ] **Secure flag** : `Set-Cookie: ... Secure`
-- [ ] **HttpOnly flag** : `Set-Cookie: ... HttpOnly`
-- [ ] **SameSite flag** : `Set-Cookie: ... SameSite=Strict`
+- [✅] **HttpOnly flag** : `Set-Cookie: ... HttpOnly`
+- [✅] **SameSite flag** : `Set-Cookie: ... SameSite=Strict`
 
 ---
 
@@ -361,9 +361,9 @@
 
 ### 8.2 Logs & Monitoring (Optionnel, Bonus)
 
-- [ ] **Logs des actions importantes** : Authentification, modifications, erreurs
-- [ ] **Logs séparés** : Pas dans la même console que les logs système
-- [ ] **Aucune donnée sensible dans les logs** : Pas de mots de passe, tokens, etc.
+- [✅] **Logs des actions importantes** : Authentification, modifications, erreurs
+- [✅] **Logs séparés** : Pas dans la même console que les logs système
+- [✅] **Aucune donnée sensible dans les logs** : Pas de mots de passe, tokens, etc.
 
 ---
 
@@ -388,7 +388,7 @@
 
 ### 9.2 Test de pénétration basique (Optionnel)
 
-- [ ] **Tentative d'exploitation des 3 failles principales testées**
+- [✅] **Tentative d'exploitation des 3 failles principales testées**
   - SQL Injection
   - XSS
   - Accès non autorisé (IDOR)
@@ -403,7 +403,7 @@
 
 ### 10.1 README & Documentation
 
-- [ ] **README.md présent** avec :
+- [✅] **README.md présent** avec :
   - Description du projet
   - Installation locale
   - Variables d'environnement à configurer (`.env.example`)
@@ -421,7 +421,7 @@
 
 ### 10.2 Contrôle de version
 
-- [ ] **Dépôt Git** avec commits clairs
+- [✅] **Dépôt Git** avec commits clairs
   - Pas de commit "gros commit" sans message
   - Historique lisible
 
