@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL =  'http://localhost:5000/api/story/stories';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost';
+// On pointe vers /api/story/stories sans port 5000
+const API_URL =  `${BASE_URL}/api/story/stories`;
 
 export const getStories = async () => {
   try {

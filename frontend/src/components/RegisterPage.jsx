@@ -102,8 +102,9 @@ export default function RegisterPage(){
 
     setIsSubmitting(true);
 
+    const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost';
     const endpoint = isLoginMode ? 'login' : 'register';
-    const url = `http://localhost:4000/api/auth/${endpoint}`;
+    const url = `${BASE_URL}/api/auth/${endpoint}`;
 
     try {
       const res = await axios.post(url, form, { withCredentials: true });

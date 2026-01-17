@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Footer from './Footer';
 import '../styles/RegisterStyle.css';
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +12,12 @@ export default function AdminPage() {
     const navigate = useNavigate();
     const [showProfile, setShowProfile] = useState(false);
     const [message, setMessage] = useState(null); 
+    const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost'; // L'URL clean
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:4000/api/auth/admin/allusers', { 
+            const response = await fetch(`${BASE_URL}/api/auth/admin/allusers`, {
                 method: 'GET',
                 credentials: 'include', 
                 headers: {
@@ -26,7 +27,7 @@ export default function AdminPage() {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`vous n'avez pas la permission d'accéder à cette ressource: ${errorText}`);
+                throw new Error(`Erreur : ${errorText}`);
             }
 
             const data = await response.json();
@@ -38,7 +39,7 @@ export default function AdminPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const handleDelete = async (userId, userName) => {
         if (!window.confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur: ${userName} (ID: ${userId})?`)) {
@@ -47,7 +48,7 @@ export default function AdminPage() {
 
         setMessage(null); 
         try {
-            const response = await fetch(`http://localhost:4000/api/auth/admin/deleteuser/${userId}`, {
+            const response = await fetch(`${BASE_URL}/api/auth/admin/deleteuser/${userId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });

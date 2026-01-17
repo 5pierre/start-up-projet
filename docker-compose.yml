@@ -1,48 +1,72 @@
-version: '3.8'
 
 services:
+  # 1. Base de données
   postgres:
     image: postgres:13
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./databasee/postgreSQL.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck: # sinon le service auth peut démarrer avant la BDD
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 3s
       retries: 5
-      start_period: 10s
 
-
-
+  # 2. Backend Auth
   auth:
+    # Nom de l'image pour Docker Hub (change 'marinecdt' par ton user hub)
+    image: marinecdt/filrouge-auth:latest 
     build: ./BACKEND/auth-service
-    ports:
-      - "4000:4000"
-    depends_on:
-      postgres: # sinon auth démarrer avant la BDD >:(
-        condition: service_healthy
-    env_file:
-      - .env
-
-  story:
-    build: ./BACKEND/story-service
-    ports:
-      - "5000:5000"
+    expose:
+      - "4000" # Uniquement visible par Nginx, pas par ton PC
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
       - .env
 
+  # 3. Backend Story
+  story:
+    # Nom de l'image pour Docker Hub
+    image: marinecdt/filrouge-story:latest
+    build: ./BACKEND/story-service
+    expose:
+      - "5000" # Uniquement visible par Nginx
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  # 4. Frontend React
+  frontend:
+    # Nom de l'image pour Docker Hub
+    image: marinecdt/filrouge-front:latest
+    build: ./frontend
+    expose:
+      - "3000"
+    volumes:
+      - ./frontend/src:/app/src # Hot Reloading
+    environment:
+      - REACT_APP_API_URL=http://localhost
+    stdin_open: true
+    tty: true
+
+  # 5. Routeur Nginx (Porte d'entrée)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80" # LE SEUL PORT OUVERT SUR TON PC
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - auth
+      - story
+
 volumes:
   pgdata:
-
-# docker-compose up --build
-# docker-compose down -v
