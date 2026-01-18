@@ -1,15 +1,17 @@
-// src/services/authService.js
 import axios from 'axios';
+
+// On utilise la variable d'env ou localhost par défaut (port 80 implicite)
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost';
 
 export const checkAdminAccess = () => {
     const userRole = localStorage.getItem('userRole');
-    
     return userRole === 'admin';
-  };
+};
   
 export const logout = async () => {
     try {
-      await axios.post('http://localhost:4000/api/auth/logout', {}, { 
+      // URL propre via Nginx
+      await axios.post(`${BASE_URL}/api/auth/logout`, {}, { 
         withCredentials: true 
       });
     } catch (error) {
@@ -18,6 +20,6 @@ export const logout = async () => {
       localStorage.removeItem('userId');
       localStorage.removeItem('userName');
       localStorage.removeItem('userRole');
-      window.location.href = '/register';
+      window.location.href = '/register'; 
     }
-  };
+};
