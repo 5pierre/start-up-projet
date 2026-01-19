@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
 // On pointe vers /api/auth/users sans port 4000
 const API_URL =  `${BASE_URL}/api/auth/users`;
 
@@ -23,7 +23,7 @@ export const getUser = async (id) => {
     });
     return response;
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error('Error fetching users:', error);
     throw error;
   }
 };
@@ -36,7 +36,7 @@ export const deleteUser = async (id) => {
     });
     return response;
   } catch (error) {
-    console.error('Error deleting event:', error);
+    console.error('Error deleting user:', error);
     throw error;
   }
 };

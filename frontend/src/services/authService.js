@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// On utilise la variable d'env ou localhost par défaut (port 80 implicite)
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
 
 export const checkAdminAccess = () => {
     const userRole = localStorage.getItem('userRole');
