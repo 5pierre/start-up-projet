@@ -102,7 +102,7 @@ export default function RegisterPage(){
 
     setIsSubmitting(true);
 
-    const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost';
+    const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
     const endpoint = isLoginMode ? 'login' : 'register';
     const url = `${BASE_URL}/api/auth/${endpoint}`;
 
