@@ -6,8 +6,11 @@ const helmet = require('helmet');
 const app = express();
 app.use(helmet());
 
+const PORT = process.env.PORT_AUTH;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+
 app.use(cors({ 
-    origin: 'http://localhost:3000',  //CHANGE IN PROD a rendre dynamique
+    origin: FRONTEND_ORIGIN,  //CHANGE IN PROD a rendre dynamique
     // origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -20,7 +23,7 @@ app.set('trust proxy', 1); // ?
 
 app.use('/api/auth', authRoutes);
 
-const port = 4000;
+const port = PORT;
 app.listen(port, () => {
     console.log(`Auth-service running at http://localhost:${port}`);
 });

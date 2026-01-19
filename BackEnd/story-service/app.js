@@ -5,9 +5,11 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const app = express();
 
+const PORT = process.env.PORT_STORY;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
 
 app.use(cors({ 
-    origin: 'http://localhost:3000', // Exemple en PROD
+    origin: FRONTEND_ORIGIN, // Exemple en PROD
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -22,7 +24,7 @@ app.set('trust proxy', 1);
 app.use('/api/story', storyRoutes);
 
 // Port d'écoute du Story Service
-const port = 5000;
+const port = PORT;
 
 app.listen(port, () => {
     console.log(`Story-service running at http://localhost:${port}`);
