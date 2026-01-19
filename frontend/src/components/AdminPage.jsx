@@ -12,12 +12,12 @@ export default function AdminPage() {
     const navigate = useNavigate();
     const [showProfile, setShowProfile] = useState(false);
     const [message, setMessage] = useState(null); 
-    const BASE_URL = process.env.REACT_APP_API_URL; // L'URL clean
+    const BASE_URL_AUTH = process.env.REACT_APP_API_AUTH_URL; // L'URL clean
 
     const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BASE_URL}/api/auth/admin/allusers`, {
+            const response = await fetch(`${BASE_URL_AUTH}/api/auth/admin/allusers`, {
                 method: 'GET',
                 credentials: 'include', 
                 headers: {
@@ -48,7 +48,7 @@ export default function AdminPage() {
 
         setMessage(null); 
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/admin/deleteuser/${userId}`, {
+            const response = await fetch(`${BASE_URL_AUTH}/api/auth/admin/deleteuser/${userId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
