@@ -50,8 +50,6 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend/src:/app/src # Hot Reloading
-    environment:
-      - REACT_APP_API_URL=http://localhost #??? 
     env_file:
       - .env
 
