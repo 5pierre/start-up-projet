@@ -1,0 +1,4 @@
+FROM postgres:13
+
+
+COPY postgreSQL.sql /docker-entrypoint-initdb.d/init.sql
