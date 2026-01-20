@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS stories (
     CONSTRAINT fk_user
         FOREIGN KEY (id_user)
         REFERENCES users (id_user) 
+        ON DELETE CASCADE 
 );
 
 
