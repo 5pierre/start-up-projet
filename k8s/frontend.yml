@@ -31,8 +31,14 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
-        env:
-          - name: REACT_APP_API_URL
-            value: "http://auth-service:4000"
-        # Pas besoin d'env vars ici car elles sont "cuites" dans le build React
-        # ou gérées par le config-secrets si tu as reconstruit l'image avec.
+        env:   
+        # - name: REACT_APP_API_AUTH_URL
+        #   value: "http://auth-service:4000"
+        # - name: REACT_APP_API_STORY_URL
+        #   value: "http://story-service:5000"
+        #   env:
+        - name: REACT_APP_API_AUTH_URL
+          value: "/api/auth"
+        - name: REACT_APP_API_STORY_URL
+          value: "/api/story"
+
