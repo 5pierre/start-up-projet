@@ -35,7 +35,7 @@ spec:
       containers:
       - name: postgres
         # On utilise VOTRE image qui contient maintenant le script SQL
-        image: postgres:13 
+        image: marinecdt/filrouge-db:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5432
