@@ -36,3 +36,4 @@ spec:
             name: app-config
         - secretRef:
             name: app-secrets
+            # test
