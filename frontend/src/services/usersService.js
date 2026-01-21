@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
 // On pointe vers /api/auth/users sans port 4000
-const API_URL =  `${BASE_URL}/api/auth/users`;
+const API_URL =  `${BASE_URL}/users`;
 
 export const getUsers = async () => {
   try {

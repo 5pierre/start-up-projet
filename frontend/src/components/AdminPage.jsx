@@ -17,7 +17,7 @@ export default function AdminPage() {
     const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BASE_URL_AUTH}/api/auth/admin/allusers`, {
+            const response = await fetch(`${BASE_URL_AUTH}/admin/allusers`, {
                 method: 'GET',
                 credentials: 'include', 
                 headers: {

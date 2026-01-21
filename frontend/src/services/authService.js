@@ -10,7 +10,7 @@ export const checkAdminAccess = () => {
 export const logout = async () => {
     try {
       // URL propre via Nginx
-      await axios.post(`${BASE_URL}/api/auth/logout`, {}, { 
+      await axios.post(`${BASE_URL}/logout`, {}, { 
         withCredentials: true 
       });
     } catch (error) {
