@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: marinecdt/filrouge-auth:latest # Ton image Docker Hub
+        image: marinecdt/filrouge-auth:latest 
         imagePullPolicy: Always
         ports:
         - containerPort: 4000
