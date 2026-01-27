@@ -1,3 +1,7 @@
+import fs from "fs";
+import OpenAI from "openai";
+import { buildAnnonce } from "../data/annonce.js";
+
 const { getStories, createStory } = require('../data/story');
 const fs = require('node:fs');
 const jwt = require('jsonwebtoken');
@@ -7,6 +11,56 @@ const verifyToken = (token) => {
     if (!token) throw new Error("No token provided");
     return jwt.verify(token, Key);
 };
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+export async function generateAnnonceFromAudio(audioPath) {
+  const transcription = await openai.audio.transcriptions.create({
+    file: fs.createReadStream(audioPath),
+    model: "whisper-1",
+    language: "fr"
+  });
+
+  const speechText = transcription.text;
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0.2,
+    messages: [
+      {
+        role: "system",
+        content: `
+Tu transformes un texte parlé en annonce claire et professionnelle.
+
+Retourne UNIQUEMENT un JSON strict :
+{
+  "titre": string,
+  "description": string,
+  "prix": number | null,
+  "date": string | null
+}
+
+Règles :
+- Reformule proprement et clairement
+- Sois concis
+- Utilise un langage professionnel
+- Si une information est absente, mets null
+- Prix en nombre
+- Date au format ISO YYYY-MM-DD si présente
+`
+      },
+      {
+        role: "user",
+        content: speechText
+      }
+    ]
+  });
+
+  const parsed = JSON.parse(completion.choices[0].message.content);
+
+  return buildAnnonce(parsed);
+}
 
 // GET ALL STORIES
 async function getAllStories(req, res) {

@@ -45,4 +45,15 @@ async function createStory(id_user, content) {
   }
 }
 
+export function buildAnnonce(data) {
+  return {
+    titre: data.titre ?? "",
+    description: data.description ?? "",
+    prix: typeof data.prix === "number" ? data.prix : null,
+    date: data.date ?? null,
+    createdAt: new Date().toISOString()
+  };
+}
+
+
 module.exports = { getStories, createStory };
