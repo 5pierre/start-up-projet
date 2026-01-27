@@ -2,14 +2,15 @@ const express = require('express');
 import multer from "multer";
 import fs from "fs";
 import { processAnnonceFromAudio } from "../core/annonce.services.js";
-
 const router = express.Router();
-const { getAllStories, createNewStory } = require('../core/annonce.services');
 const upload = multer({ dest: "uploads/" });
+const { 
+  getAllAnnonces, 
+  getSingleAnnonce,
+  updateExistingAnnonce,
+  deleteExistingAnnonce
+} = require('../core/annonce.services');
 
-
-router.get('/stories', getAllStories);
-router.post('/stories', createNewStory);
 
 router.post(
   "/from-audio",
@@ -25,6 +26,15 @@ router.post(
     }
   }
 );
+
+
+// Public routes
+router.get('/annonces', getAllAnnonces);           // GET all annonces with optional global search: ?search=Paris
+router.get('/annonces/:id', getSingleAnnonce);     // GET single annonce by ID
+
+// Protected routes (require authentication)
+router.put('/annonces/:id', updateExistingAnnonce);    // UPDATE annonce
+router.delete('/annonces/:id', deleteExistingAnnonce); // DELETE annonce
 
 
 module.exports = router;

@@ -1,17 +1,32 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import annonceRoutes from "./api/annonce.routes.js";
-
-dotenv.config();
-
+const express = require('express');
+const cors = require('cors');
+const annonceRoutes = require('./src/api/annonce.routes'); 
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const app = express();
-app.use(cors());
+
+const PORT = process.env.PORT_ANNONCE;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+
+app.use(cors({ 
+    origin: FRONTEND_ORIGIN, // Exemple en PROD
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(helmet());
 
-app.use("/api/annonces", annonceRoutes);
+app.set('trust proxy', 1); 
 
-const PORT = process.env.PORT || 4003;
-app.listen(PORT, () => {
-  console.log(`annonce-service running on port ${PORT}`);
+app.use('/api/annonce', annonceRoutes);
+
+// Port d'écoute du Annonce Service
+const port = PORT;
+
+app.listen(port, () => {
+    console.log(`Annonce-service running at http://localhost:${port}`);
 });
+
