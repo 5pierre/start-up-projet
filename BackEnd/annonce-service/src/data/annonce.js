@@ -35,7 +35,7 @@ function buildAnnonce(data) {
  * @param {string} searchTerm - Optional search term for city, title, description, and user skills
  * @returns {Promise<Array>} Array of annonces
  */
-async function getAnnonces(searchTerm = null) {
+async function getAllAnnonces(searchTerm = null) {
   try {
     let query = `
       SELECT 
@@ -86,7 +86,7 @@ async function getAnnonces(searchTerm = null) {
  * @param {number} id - Annonce ID
  * @returns {Promise<Object|null>} Annonce object or null
  */
-async function getAnnonceById(id) {
+async function getSingleAnnonce(id) {
   try {
     const result = await pool.query(
       `SELECT 
@@ -122,13 +122,14 @@ async function getAnnonceById(id) {
  * @param {Object} annonceData - Updated annonce data
  * @returns {Promise<Object|null>} Updated annonce or null
  */
-async function updateAnnonce(id, id_user, annonceData) {
+async function updateExistingAnnonce(id, id_user, annonceData) {
   try {
     const { titre, description, lieu, prix, photo } = annonceData;
     const result = await pool.query(
       `UPDATE annonces 
        SET titre = $1, description = $2, lieu = $3, prix = $4, photo = $5
-       WHERE id = $6 AND id_user = $7
+       WHERE id = $6
+       AND ($7::INT IS NULL OR id_user = $7)
        RETURNING *`,
       [titre, description, lieu, prix, photo, id, id_user]
     );
@@ -145,11 +146,12 @@ async function updateAnnonce(id, id_user, annonceData) {
  * @param {number} id_user - User ID (for verification)
  * @returns {Promise<Object|null>} Deleted annonce or null
  */
-async function deleteAnnonce(id, id_user) {
+async function deleteExistingAnnonce(id, id_user) {
   try {
     const result = await pool.query(
       `DELETE FROM annonces 
-       WHERE id = $1 AND id_user = $2
+       WHERE id = $1
+       AND ($2::INT IS NULL OR id_user = $2)
        RETURNING *`,
       [id, id_user]
     );
@@ -160,10 +162,10 @@ async function deleteAnnonce(id, id_user) {
   }
 }
 
-module.exports = { 
-  getAnnonces, 
-  getAnnonceById,
-  updateAnnonce, 
-  deleteAnnonce,
-  buildAnnonce // Ajouté ici pour être accessible dans le service
+module.exports = {
+  getAllAnnonces, 
+  getSingleAnnonce,
+  updateExistingAnnonce,
+  deleteExistingAnnonce,
+  buildAnnonce
 };

@@ -5,8 +5,8 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const app = express();
 
-const PORT = process.env.PORT_ANNONCE;
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+const PORT = process.env.PORT_ANNONCE || 3002;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
 
 app.use(cors({ 
     origin: FRONTEND_ORIGIN, // Exemple en PROD
@@ -24,9 +24,7 @@ app.set('trust proxy', 1);
 app.use('/api/annonce', annonceRoutes);
 
 // Port d'écoute du Annonce Service
-const port = PORT;
-
-app.listen(port, () => {
-    console.log(`Annonce-service running at http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Annonce-service running at http://localhost:${PORT}`);
 });
 

@@ -2,10 +2,10 @@ const fs = require('fs');
 const OpenAI = require("openai");
 const jwt = require('jsonwebtoken');
 const { 
-  getAnnonces, 
-  getAnnonceById,
-  updateAnnonce, 
-  deleteAnnonce,
+  getAllAnnonces: getAllAnnoncesData,
+  getSingleAnnonce: getSingleAnnonceData,
+  updateExistingAnnonce: updateExistingAnnonceData,
+  deleteExistingAnnonce: deleteExistingAnnonceData,
   buildAnnonce 
 } = require('../data/annonce');
 
@@ -72,7 +72,7 @@ Règles :
 async function getAllAnnonces(req, res) {
   try {
     const { search } = req.query;
-    const annonces = await getAnnonces(search);
+    const annonces = await getAllAnnoncesData(search);
     
     if (!annonces || annonces.length === 0) {
       return res.status(200).json({ 
@@ -108,7 +108,7 @@ async function getSingleAnnonce(req, res) {
       return res.status(400).json({ error: "Invalid annonce ID" });
     }
 
-    const annonce = await getAnnonceById(id);
+    const annonce = await getSingleAnnonceData(id);
 
     if (!annonce) {
       return res.status(404).json({ error: "Annonce not found" });
@@ -129,6 +129,7 @@ async function updateExistingAnnonce(req, res) {
 
   try {
     const decodedToken = verifyToken(token);
+    const isAdmin = decodedToken.role === 'admin';
     const id = Number.parseInt(req.params.id);
     const { titre, description, lieu, prix, photo } = req.body;
 
@@ -136,8 +137,8 @@ async function updateExistingAnnonce(req, res) {
       return res.status(400).json({ error: "Invalid annonce ID" });
     }
 
-    const id_user = decodedToken.id;
-    const updatedAnnonce = await updateAnnonce(id, id_user, {
+    const id_user = isAdmin ? null : decodedToken.id;
+    const updatedAnnonce = await updateExistingAnnonceData(id, id_user, {
       titre, description, lieu, prix, photo
     });
 
@@ -165,14 +166,15 @@ async function deleteExistingAnnonce(req, res) {
 
   try {
     const decodedToken = verifyToken(token);
+    const isAdmin = decodedToken.role === 'admin';
     const id = Number.parseInt(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({ error: "Invalid annonce ID" });
     }
 
-    const id_user = decodedToken.id;
-    const deletedAnnonce = await deleteAnnonce(id, id_user);
+    const id_user = isAdmin ? null : decodedToken.id;
+    const deletedAnnonce = await deleteExistingAnnonceData(id, id_user);
 
     if (!deletedAnnonce) {
       return res.status(404).json({ error: "Annonce not found or permission denied" });
