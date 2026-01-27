@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
     profileData VARCHAR(400) NOT NULL,
     password VARCHAR(500) NOT NULL,  
     name VARCHAR(30) NOT NULL,
-    -- firstname VARCHAR(30) NOT NULL,        
     ville VARCHAR(100),
     photo TEXT 
                  
