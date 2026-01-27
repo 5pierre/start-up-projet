@@ -3,6 +3,7 @@ import Footer from './Footer';
 import '../styles/RegisterStyle.css';
 import { useNavigate } from 'react-router-dom';
 import UserProfile from "./UserProfile";
+import Messages from "./Messages";
 
 export default function AdminPage() {
     const [users, setUsers] = useState([]);
@@ -177,6 +178,10 @@ useEffect(() => {
                 {!loading && !error && users.length === 0 && (
                     <p>Aucun utilisateur trouvé.</p>
                 )}
+            </div>
+            {/* Zone Messages */}
+            <div style={{ marginTop: '40px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Messages user2Id={2} />
             </div>
             <Footer />
         </div>

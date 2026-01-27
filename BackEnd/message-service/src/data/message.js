@@ -18,17 +18,17 @@ const pool = new Pool({
 async function getMessages(user1, user2) {
   try {
     const result = await pool.query(
-      `SELECT m.id, m.contenu, m.created_at, m.id_user_1, m.id_user_2, u.name AS sender_name
-        FROM messages m
-        JOIN users u ON m.id_user_1 = u.id_user
-       WHERE 
-        (m.id_user_1 = $1 AND m.id_user_2 = $2)
-       OR
-        (m.id_user_1 = $2 AND m.id_user_2 = $1)
-       ORDER BY m.created_at ASC
-      `, [user1, user2]);
-    return result.rows;
-  } catch (err) {
+    `SELECT m.id, m.contenu AS content, m.created_at, m.id_user_1, m.id_user_2, u.name AS sender_name
+      FROM messages m
+      JOIN users u ON m.id_user_1 = u.id_user
+     WHERE 
+      (m.id_user_1 = $1 AND m.id_user_2 = $2)
+     OR
+      (m.id_user_1 = $2 AND m.id_user_2 = $1)
+     ORDER BY m.created_at ASC
+    `, [user1, user2]);
+  return result.rows;
+} catch (err) {
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error fetching messages: ' + err + '\n');
     throw err;
   }

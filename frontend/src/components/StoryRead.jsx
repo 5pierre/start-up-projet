@@ -65,6 +65,15 @@ export default function StoryRead() {
         </button>
         {isAuthenticated && (
             <button
+                onClick={() => navigate('/messages')}
+                className="login100-form-btn-logout"
+                style={{ textAlign: 'center', marginLeft: '10px' }}
+            >
+                Voir mes messages
+            </button>
+        )}
+        {isAuthenticated && (
+            <button
                 onClick={() => setShowProfile(true)}
                 className="login100-form-btn-logout"
                 style={{ textAlign: 'center', right: '150px' }} 
