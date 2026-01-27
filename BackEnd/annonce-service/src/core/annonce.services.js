@@ -1,14 +1,14 @@
-import fs from "fs";
-import OpenAI from "openai";
-import { buildAnnonce } from "../data/annonce.js";
+const fs = require('fs');
+const OpenAI = require("openai");
+const jwt = require('jsonwebtoken');
 const { 
   getAnnonces, 
   getAnnonceById,
   updateAnnonce, 
-  deleteAnnonce
+  deleteAnnonce,
+  buildAnnonce 
 } = require('../data/annonce');
-const fs = require('node:fs');
-const jwt = require('jsonwebtoken');
+
 const Key = process.env.JWT_SECRET;
 
 const verifyToken = (token) => {
@@ -21,7 +21,8 @@ const openai = new OpenAI({
 });
 
 
-export async function generateAnnonceFromAudio(audioPath) {
+async function generateAnnonceFromAudio(audioPath) {
+
   const transcription = await openai.audio.transcriptions.create({
     file: fs.createReadStream(audioPath),
     model: "whisper-1",
@@ -32,13 +33,14 @@ export async function generateAnnonceFromAudio(audioPath) {
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.2,
+    response_format: { type: "json_object" }, 
     messages: [
       {
         role: "system",
         content: `
-Tu transformes un texte parlé en annonce claire et professionnelle.
+Tu es un assistant expert en immobilier. Tu transformes un texte parlé en une annonce structurée JSON.
 
-Retourne UNIQUEMENT un JSON strict :
+Retourne UNIQUEMENT un JSON respectant cette structure exacte :
 {
   "titre": string,
   "description": string,
@@ -47,35 +49,29 @@ Retourne UNIQUEMENT un JSON strict :
 }
 
 Règles :
-- Reformule proprement et clairement
-- Sois concis
-- Utilise un langage professionnel
-- Si une information est absente, mets null
-- Prix en nombre
-- Date au format ISO YYYY-MM-DD si présente
+- Le champ "titre" doit être accrocheur (ex: "Charmant T2 centre-ville").
+- Reformule la "description" pour qu'elle soit professionnelle.
+- Si le prix est mentionné, convertis-le en nombre. Sinon null.
+- Si une date de disponibilité est mentionnée, format YYYY-MM-DD. Sinon null.
 `
       },
       {
         role: "user",
-        content: speechText
+        content: `Voici la transcription audio : "${speechText}"`
       }
     ]
   });
 
+  // Parsing sécurisé grâce au response_format
   const parsed = JSON.parse(completion.choices[0].message.content);
 
   return buildAnnonce(parsed);
 }
 
 
-/**
- * GET ALL ANNONCES with optional global search
- * Query params: search (global search term)
- */
 async function getAllAnnonces(req, res) {
   try {
     const { search } = req.query;
-
     const annonces = await getAnnonces(search);
     
     if (!annonces || annonces.length === 0) {
@@ -92,18 +88,18 @@ async function getAllAnnonces(req, res) {
       search: search || null
     });
 
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + 
-      ` Annonces fetched successfully (search: ${search || 'none'})\n`);
+    try {
+        fs.appendFileSync('../../Log.txt', new Date().toISOString() + 
+        ` Annonces fetched successfully (search: ${search || 'none'})\n`);
+    } catch (e) { console.error("Log error:", e.message); }
 
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error fetching annonces: " + err + "\n");
+    console.error(err);
     res.status(500).json({ error: "Internal error while fetching annonces" });
   }
 }
 
-/**
- * GET SINGLE ANNONCE by ID
- */
+
 async function getSingleAnnonce(req, res) {
   try {
     const id = Number.parseInt(req.params.id);
@@ -119,17 +115,14 @@ async function getSingleAnnonce(req, res) {
     }
 
     res.status(200).json({ annonce });
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ` Annonce ${id} fetched successfully\n`);
 
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error fetching annonce: " + err + "\n");
+    console.error(err);
     res.status(500).json({ error: "Internal error while fetching annonce" });
   }
 }
 
-/**
- * UPDATE ANNONCE (Protected user can only update their own annonces)
- */
+
 async function updateExistingAnnonce(req, res) {
   const token = req.cookies.token;
   if (!token) return res.status(403).json({ error: "Access denied" });
@@ -143,26 +136,13 @@ async function updateExistingAnnonce(req, res) {
       return res.status(400).json({ error: "Invalid annonce ID" });
     }
 
-    // Validation
-    if (titre && (titre.length < 3 || titre.length > 255)) {
-      return res.status(400).json({ error: "Title must be between 3 and 255 characters" });
-    }
-
-    if (description && description.length > 5000) {
-      return res.status(400).json({ error: "Description is too long (max 5000 characters)" });
-    }
-
     const id_user = decodedToken.id;
     const updatedAnnonce = await updateAnnonce(id, id_user, {
-      titre,
-      description,
-      lieu,
-      prix,
-      photo
+      titre, description, lieu, prix, photo
     });
 
     if (!updatedAnnonce) {
-      return res.status(404).json({ error: "Annonce not found or you don't have permission to update it" });
+      return res.status(404).json({ error: "Annonce not found or permission denied" });
     }
 
     res.status(200).json({
@@ -170,23 +150,15 @@ async function updateExistingAnnonce(req, res) {
       annonce: updatedAnnonce
     });
 
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + 
-      ` Annonce ${id} updated by user ${id_user}\n`);
-
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error updating annonce: " + err + "\n");
-    
+    console.error(err);
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
       return res.status(401).json({ error: "Invalid or expired token" });
     }
-    
     res.status(500).json({ error: "Internal error while updating annonce" });
   }
 }
 
-/**
- * DELETE ANNONCE (Protected user can only delete their own annonces)
- */
 async function deleteExistingAnnonce(req, res) {
   const token = req.cookies.token;
   if (!token) return res.status(403).json({ error: "Access denied" });
@@ -203,7 +175,7 @@ async function deleteExistingAnnonce(req, res) {
     const deletedAnnonce = await deleteAnnonce(id, id_user);
 
     if (!deletedAnnonce) {
-      return res.status(404).json({ error: "Annonce not found or you don't have permission to delete it" });
+      return res.status(404).json({ error: "Annonce not found or permission denied" });
     }
 
     res.status(200).json({
@@ -211,24 +183,19 @@ async function deleteExistingAnnonce(req, res) {
       annonce: deletedAnnonce
     });
 
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + 
-      ` Annonce ${id} deleted by user ${id_user}\n`);
-
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error deleting annonce: " + err + "\n");
-    
+    console.error(err);
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
       return res.status(401).json({ error: "Invalid or expired token" });
     }
-    
     res.status(500).json({ error: "Internal error while deleting annonce" });
   }
 }
-
 
 module.exports = { 
   getAllAnnonces, 
   getSingleAnnonce,
   updateExistingAnnonce,
-  deleteExistingAnnonce
+  deleteExistingAnnonce,
+  generateAnnonceFromAudio
 };

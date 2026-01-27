@@ -3,12 +3,13 @@ import StoryRead from "./components/StoryRead";
 import RegisterPage from "./components/RegisterPage";
 import AdminPage from "./components/AdminPage";
 import MentionsLegales from "./components/MentionsLegales";
+import TestAnnonce from "./components/Annonces"; 
 import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { logout } from './services/authService';
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
-  const userRole = localStorage.getItem('userRole'); //
+  const userRole = localStorage.getItem('userRole');
   if (userRole !== 'admin') {
     return <Navigate to="/register" replace />;
   }
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+        <Route path="/test" element={<TestAnnonce />} />
 
       </Routes>
     </Router>

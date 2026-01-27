@@ -5,17 +5,22 @@ const pool = new Pool({
   connectionString: process.env.DB_URL
 });
 
+// Connexion à la DB au démarrage
 (async () => {
   try {
     await pool.connect();
     console.log('Connecté à PostgreSQL avec succès (Annonce Service)');
   } catch (err) {
     console.error('Erreur de connexion à PostgreSQL', err);
-    process.exit(1);
+    // On laisse le processus en vie pour que Docker ne redémarre pas en boucle trop vite
+    // process.exit(1); 
   }
 })();
 
-export function buildAnnonce(data) {
+/**
+ * Construit un objet annonce propre pour le retour au client (utilisé par l'IA)
+ */
+function buildAnnonce(data) {
   return {
     titre: data.titre ?? "",
     description: data.description ?? "",
@@ -24,7 +29,6 @@ export function buildAnnonce(data) {
     createdAt: new Date().toISOString()
   };
 }
-
 
 /**
  * Get annonces with optional global search
@@ -72,7 +76,7 @@ async function getAnnonces(searchTerm = null) {
     const result = await pool.query(query, params);
     return result.rows;
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error fetching annonces: ' + err + '\n');
+    console.error('Error fetching annonces:', err);
     throw err;
   }
 }
@@ -106,7 +110,7 @@ async function getAnnonceById(id) {
     );
     return result.rows[0] || null;
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error fetching annonce by ID: ' + err + '\n');
+    console.error('Error fetching annonce by ID:', err);
     throw err;
   }
 }
@@ -130,7 +134,7 @@ async function updateAnnonce(id, id_user, annonceData) {
     );
     return result.rows[0] || null;
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error updating annonce: ' + err + '\n');
+    console.error('Error updating annonce:', err);
     throw err;
   }
 }
@@ -151,7 +155,7 @@ async function deleteAnnonce(id, id_user) {
     );
     return result.rows[0] || null;
   } catch (err) {
-    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error deleting annonce: ' + err + '\n');
+    console.error('Error deleting annonce:', err);
     throw err;
   }
 }
@@ -160,5 +164,6 @@ module.exports = {
   getAnnonces, 
   getAnnonceById,
   updateAnnonce, 
-  deleteAnnonce
+  deleteAnnonce,
+  buildAnnonce // Ajouté ici pour être accessible dans le service
 };

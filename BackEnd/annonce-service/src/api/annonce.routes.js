@@ -1,40 +1,43 @@
 const express = require('express');
-import multer from "multer";
-import fs from "fs";
-import { processAnnonceFromAudio } from "../core/annonce.services.js";
+const multer = require('multer');
+const fs = require('fs');
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
+
 const { 
   getAllAnnonces, 
   getSingleAnnonce,
   updateExistingAnnonce,
-  deleteExistingAnnonce
+  deleteExistingAnnonce,
+  generateAnnonceFromAudio 
 } = require('../core/annonce.services');
 
 
-router.post(
-  "/from-audio",
-  upload.single("audio"),
-  async (req, res) => {
+router.post("/from-audio", upload.single("audio"), async (req, res) => {
     try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file uploaded" });
+      }
+
       const annonce = await generateAnnonceFromAudio(req.file.path);
       fs.unlinkSync(req.file.path);
       res.json(annonce);
+
     } catch (err) {
-      console.error(err);
+      console.error("Error generating annonce:", err);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
       res.status(500).json({ error: "Annonce generation failed" });
     }
   }
 );
 
 
-// Public routes
-router.get('/annonces', getAllAnnonces);           // GET all annonces with optional global search: ?search=Paris
-router.get('/annonces/:id', getSingleAnnonce);     // GET single annonce by ID
+router.get('/annonces', getAllAnnonces);           
+router.get('/annonces/:id', getSingleAnnonce);     
 
-// Protected routes (require authentication)
-router.put('/annonces/:id', updateExistingAnnonce);    // UPDATE annonce
-router.delete('/annonces/:id', deleteExistingAnnonce); // DELETE annonce
-
+router.put('/annonces/:id', updateExistingAnnonce);    
+router.delete('/annonces/:id', deleteExistingAnnonce); 
 
 module.exports = router;
