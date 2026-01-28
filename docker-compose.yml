@@ -42,6 +42,10 @@ services:
     env_file:
       - .env
 
+  annonce:
+    build: ./BackEnd/annonce-service
+    ports:
+      - "3002:3002" 
   # 4. Backend Note
   note:
     build: ./BACKEND/note-service

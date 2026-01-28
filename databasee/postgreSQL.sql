@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS annonces (
     description TEXT,
     id_user INT REFERENCES users(id_user) ON DELETE CASCADE,
     date_publication TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date DATE,
     lieu VARCHAR(255),
     prix DECIMAL(10, 2),
     photo TEXT,
@@ -48,6 +49,57 @@ CREATE TABLE IF NOT EXISTS messages (
     --     ON DELETE CASCADE 
 );
 
+-- ------------------------------------------------
+-- DONNÉES PAR DÉFAUT POUR LES TESTS D'ANNONCES
+-- ------------------------------------------------
+
+-- Utilisateur de test (auteur des annonces)
+INSERT INTO users (email, role, profileData, password, name, ville, photo)
+VALUES (
+  'annonce.tester@example.com',
+  'user',
+  'Profil test pour les annonces',
+  'hashed-password-placeholder',
+  'AnnonceTester',
+  'Paris',
+  NULL
+)
+ON CONFLICT (email) DO NOTHING;
+
+-- Récupère l'id_user de l'utilisateur de test
+WITH user_cte AS (
+  SELECT id_user FROM users WHERE email = 'annonce.tester@example.com' LIMIT 1
+)
+INSERT INTO annonces (titre, description, id_user, lieu, prix, photo, is_valide)
+SELECT
+  'Guitare électrique Fender Stratocaster',
+  'Guitare en très bon état, idéale pour rock et blues. Vendue avec housse.',
+  id_user,
+  'Lyon',
+  500.00,
+  NULL,
+  TRUE
+FROM user_cte
+UNION ALL
+SELECT
+  'Appartement T2 centre-ville',
+  'Bel appartement T2 de 45m², proche transports et commerces.',
+  id_user,
+  'Paris',
+  950.00,
+  NULL,
+  TRUE
+FROM user_cte
+UNION ALL
+SELECT
+  'PC portable développeur',
+  'Laptop i7, 16Go RAM, SSD 512Go, parfait pour le dev.',
+  id_user,
+  'Marseille',
+  800.00,
+  NULL,
+  TRUE
+FROM user_cte;
 -- =========================
 -- Données de test (seed)
 -- =========================

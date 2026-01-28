@@ -109,6 +109,15 @@ useEffect(() => {
                     Voir Mon Profil
                 </button>
             )}
+            {isAuthenticated && (
+                <button
+                    onClick={() => navigate('/annonces')}
+                    className="login100-form-btn-logout"
+                    style={{ textAlign: 'center', right: '300px' }}
+                >
+                    Voir les annonces
+                </button>
+            )}
             {showProfile && <UserProfile onClose={() => setShowProfile(false)} />} 
             <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center' }}>
                 <h1>Page Admin</h1>
