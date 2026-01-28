@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import StoryRead from "./components/StoryRead";
-import RegisterPage from "./components/RegisterPage";
-import AdminPage from "./components/AdminPage";
-import MentionsLegales from "./components/MentionsLegales";
-import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import StoryRead from './components/StoryRead';
+import RegisterPage from './components/RegisterPage';
+import AdminPage from './components/AdminPage';
+import MentionsLegales from './components/MentionsLegales';
+import MessagingPage from './components/MessagingPage';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { logout } from './services/authService';
-import "./App.css";
+import './App.css';
 
 const ProtectedRoute = ({ children }) => {
   const userRole = localStorage.getItem('userRole'); //
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+        <Route path="/messages" element={<MessagingPage />} />
 
       </Routes>
     </Router>

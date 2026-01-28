@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import StoryWrite from "./StoryWrite";
+import StoryWrite from './StoryWrite';
 import '../styles/RegisterStyle.css';
 import Footer from './Footer';
 import { getStories } from '../services/storyService';
 import { logout } from '../services/authService';
 import UserProfile from './UserProfile';
-
+import Navbar from './Navbar';
 
 export default function StoryRead() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
   const [stories, setStories] = useState([]);
   const [error, setError] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchStories = async () => {
     try {
@@ -39,51 +38,53 @@ export default function StoryRead() {
   }, []);
 
   const handleLogout = async () => {
-    await logout(); 
+    await logout();
   };
 
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      handleLogout();
-    } else {
-      navigate('/register');
-    }
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
   };
 
   const addStory = (newStory) => {
     setStories([newStory, ...stories]);
   };
 
+  const filteredStories = stories.filter((story) => {
+    const text = `${story.content || ''} ${story.author_name || ''}`.toLowerCase();
+    return text.includes(searchTerm.toLowerCase());
+  });
+
   return (
-    <div className="container-login100">
-        <button
-            onClick={handleAuthClick}
-            className="login100-form-btn-logout"
-            style={{ textAlign: 'center' }}
-            >
-            {isAuthenticated ? 'Se déconnecter' : 'Inscription'}
-        </button>
-        {isAuthenticated && (
-            <button
-                onClick={() => setShowProfile(true)}
-                className="login100-form-btn-logout"
-                style={{ textAlign: 'center', right: '150px' }} 
-            >
-                Voir Mon Profil
-            </button>
-        )}
-        {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+    <>
+      <Navbar
+        onSearchChange={handleSearchChange}
+        onProfileClick={() => setShowProfile(true)}
+      />
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+      <div className="container-login100">
       <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center' }}>
         <h1>Bienvenue sur Discute Potins 🎉</h1>
         <h2>Histoires</h2>
         <div id="story" className="story">
             {error && <p style={{color: 'red'}}>Erreur: {error}</p>}
-            {!error && stories.length === 0 ? (
+            {!error && filteredStories.length === 0 ? (
                 <p>Aucune histoire pour le moment.</p>
             ) : (
-                !error && stories.map((story, index) => (
+                !error && filteredStories.map((story, index) => (
                 <div key={index} className="story-item">
-                    {story.content || story} 
+                    <div className="story-content">
+                      {story.content || story}
+                    </div>
+                    {story.author_name && (
+                      <div className="story-meta">
+                        <span className="story-author">Par {story.author_name}</span>
+                        {story.created_at && (
+                          <span className="story-date">
+                            {new Date(story.created_at).toLocaleString('fr-FR')}
+                          </span>
+                        )}
+                      </div>
+                    )}
                 </div>
                 ))
             )}
@@ -96,6 +97,7 @@ export default function StoryRead() {
         )}        
       </div>
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }
