@@ -59,6 +59,28 @@ router.post('/logout', (req, res) => {
     res.status(200).json({ message: "Déconnecté" });
 });
 
+// Vérifie la session (cookie JWT) sans déconnecter
+router.get('/me', async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+    try {
+        const decoded = verifyToken(token);
+        const user = await findUserByEmail(decoded.email);
+        if (!user) return res.status(401).json({ error: "Not authenticated" });
+        return res.status(200).json({
+            user: {
+                id: user.id_user,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (err) {
+        return res.status(401).json({ error: "Not authenticated" });
+    }
+});
+
 
 // Admin Command (Protected)
 

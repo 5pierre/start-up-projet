@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 // Importez la fonction existante getUser
 import { getUser } from '../services/usersService'; 
+import { getUserRatingSummary } from '../services/noteService';
+import StarRating from './StarRating';
 import '../styles/RegisterStyle.css'; 
 
 export default function UserProfile({ onClose }) {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [ratingSummary, setRatingSummary] = useState({ average: 0, count: 0 });
     const userIdRaw = localStorage.getItem('userId');
     const userId = Number.parseInt(userIdRaw, 10); 
 
@@ -33,6 +36,23 @@ export default function UserProfile({ onClose }) {
         };
 
         fetchProfile();
+    }, [userId]);
+
+    useEffect(() => {
+        if (Number.isNaN(userId) || userId <= 0) return;
+        const fetchRating = async () => {
+            try {
+                const res = await getUserRatingSummary(userId);
+                setRatingSummary({
+                    average: res.data?.average ?? 0,
+                    count: res.data?.count ?? 0
+                });
+            } catch (err) {
+                // On n'affiche pas d'erreur bloquante: le profil doit rester visible
+                console.error("Erreur lors de la récupération de la note moyenne:", err);
+            }
+        };
+        fetchRating();
     }, [userId]);
 
     return (
@@ -92,11 +112,27 @@ export default function UserProfile({ onClose }) {
                                 }}
                             />
                         </div>
+                        <div style={{ marginBottom: '18px' }}>
+                            <StarRating value={Number(ratingSummary.average) || 0} readOnly size={20} />
+                            <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>
+                                {ratingSummary.count} avis
+                            </div>
+                        </div>
                         <div style={{ textAlign: 'left' }}>
                             <p><strong>Nom :</strong> {profile.name}</p>
                             <p><strong>Email :</strong> {profile.email}</p>
                             <p><strong>Rôle :</strong> {profile.role}</p>
                             <p><strong>Ville :</strong> {profile.ville || 'Non renseignée'}</p>
+                        </div>
+                        <div style={{ marginTop: 18 }}>
+                            <button
+                                type="button"
+                                onClick={() => { window.location.href = `/users/${userId}/comments`; }}
+                                className="login100-form-btn"
+                                style={{ width: '100%', maxWidth: 260, margin: '0 auto' }}
+                            >
+                                Voir les commentaires
+                            </button>
                         </div>
                     </div>
                 )}

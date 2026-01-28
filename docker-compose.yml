@@ -42,7 +42,18 @@ services:
     env_file:
       - .env
 
-  # 4. Frontend React
+  # 4. Backend Note
+  note:
+    build: ./BACKEND/note-service
+    ports:
+      - "6100:6100"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  # 5. Frontend React
   frontend:
     # images: Nom de l'image pour Docker Hub pas sutilisé pour le moment
     build: ./frontend
