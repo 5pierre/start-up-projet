@@ -4,6 +4,7 @@ import RegisterPage from "./components/RegisterPage";
 import AdminPage from "./components/AdminPage";
 import MentionsLegales from "./components/MentionsLegales";
 import TestAnnonce from "./components/Annonces"; 
+import CreateAnnonce from "./components/CreateAnnonce";
 import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { logout } from './services/authService';
 import "./App.css";
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         <Route path="/test" element={<TestAnnonce />} />
+        <Route path="/create" element={<CreateAnnonce />} />
 
       </Routes>
     </Router>

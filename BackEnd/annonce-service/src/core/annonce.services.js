@@ -1,6 +1,8 @@
 const fs = require('fs');
 const OpenAI = require("openai");
 const jwt = require('jsonwebtoken');
+
+
 const { 
   getAllAnnonces: getAllAnnoncesData,
   getSingleAnnonce: getSingleAnnonceData,
@@ -21,15 +23,35 @@ const openai = new OpenAI({
 });
 
 
-async function generateAnnonceFromAudio(audioPath) {
+const FormData = require('form-data');
 
-  const transcription = await openai.audio.transcriptions.create({
-    file: fs.createReadStream(audioPath),
-    model: "whisper-1",
-    language: "fr"
+
+async function generateAnnonceFromAudio(audioBuffer, mimeType) {
+  
+  // Créer un FormData avec le buffer
+  const form = new FormData();
+  form.append('file', audioBuffer, {
+    filename: 'audio.webm',
+    contentType: mimeType || 'audio/webm'
   });
+  form.append('model', 'whisper-1');
+  form.append('language', 'fr');
 
-  const speechText = transcription.text;
+  // Faire l'appel directement avec axios
+  const axios = require('axios');
+  const transcriptionResponse = await axios.post(
+    'https://api.openai.com/v1/audio/transcriptions',
+    form,
+    {
+      headers: {
+        ...form.getHeaders(),
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      }
+    }
+  );
+
+  const speechText = transcriptionResponse.data.text;
+  
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.2,
@@ -62,11 +84,11 @@ Règles :
     ]
   });
 
-  // Parsing sécurisé grâce au response_format
   const parsed = JSON.parse(completion.choices[0].message.content);
 
   return buildAnnonce(parsed);
 }
+
 
 
 async function getAllAnnonces(req, res) {

@@ -19,9 +19,10 @@ export default function TestAnnonce() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAllAnnonces();
-        const data = response.data;
-        setAnnonces(data.annonces || data || []);
+        // ✅ getAllAnnonces() retourne déjà response.data
+        const data = await getAllAnnonces();
+        console.log('Data reçue:', data); // Pour déboguer
+        setAnnonces(data.annonces || []);
       } catch (e) {
         console.error('Erreur lors du chargement des annonces :', e);
         setError("Impossible de charger les annonces.");
@@ -53,8 +54,9 @@ export default function TestAnnonce() {
 
   const handleGetById = async () => {
     try {
+      // ✅ getSingleAnnonce retourne déjà response.data
       const res = await getSingleAnnonce(testId);
-      setRawResponse(res.data);
+      setRawResponse(res);
     } catch (e) {
       setRawResponse({ error: e.message });
     }
@@ -62,8 +64,9 @@ export default function TestAnnonce() {
 
   const handleUpdate = async () => {
     try {
+      // ✅ updateExistingAnnonce retourne déjà response.data
       const res = await updateExistingAnnonce(testId, { titre: updateTitre });
-      setRawResponse(res.data);
+      setRawResponse(res);
     } catch (e) {
       setRawResponse({ error: e.message });
     }
@@ -71,8 +74,9 @@ export default function TestAnnonce() {
 
   const handleDelete = async () => {
     try {
+      // ✅ deleteExistingAnnonce retourne déjà response.data
       const res = await deleteExistingAnnonce(testId);
-      setRawResponse(res.data);
+      setRawResponse(res);
     } catch (e) {
       setRawResponse({ error: e.message });
     }

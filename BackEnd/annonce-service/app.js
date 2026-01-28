@@ -8,11 +8,12 @@ const app = express();
 const PORT = process.env.PORT_ANNONCE || 3002;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
 
+
 app.use(cors({ 
-    origin: FRONTEND_ORIGIN, // Exemple en PROD
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
+  origin: FRONTEND_ORIGIN,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -21,10 +22,8 @@ app.use(helmet());
 
 app.set('trust proxy', 1); 
 
-app.use('/api/annonce', annonceRoutes);
+app.use('/api', annonceRoutes);
 
-// Port d'écoute du Annonce Service
 app.listen(PORT, () => {
-    console.log(`Annonce-service running at http://localhost:${PORT}`);
+  console.log(`Annonce-service running at http://localhost:${PORT}`);
 });
-
