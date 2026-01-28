@@ -1,9 +1,9 @@
 // Vérifiez votre variable .env ou ajoutez /api/message ici
 const BASE_URL_MESSAGE = (process.env.REACT_APP_API_MESSAGE_URL || 'http://localhost:5000') + '/api/message'; 
 
-export const getMessages = async () => {
+export const getMessages = async (user2Id) => {
   // Appelle maintenant http://localhost:5000/api/message/messages
-  const response = await fetch(`${BASE_URL_MESSAGE}/messages`, { 
+  const response = await fetch(`${BASE_URL_MESSAGE}/messages/${user2Id}`, { 
     method: 'GET',
     credentials: 'include',
   });
@@ -22,5 +22,14 @@ export const postMessage = async (content, user2Id) => {
     credentials: "include", // si cookies
   });
   return await response.json();
+};
+
+export const getConversations = async () => {
+  const response = await fetch(`${BASE_URL_MESSAGE}/conversations`, { 
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('Erreur API: ' + response.statusText);
+  return response.json();
 };
 

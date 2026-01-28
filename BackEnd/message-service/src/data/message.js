@@ -49,4 +49,23 @@ async function createMessage(id_user_1, id_user_2, content) {
   }
 }
 
+async function getConversations(currentUserId) {
+  try {
+    const result = await pool.query(
+      `SELECT u.id_user, u.name, u.photo, u.email
+       FROM users u
+       WHERE u.id_user IN (
+           SELECT id_user_2 FROM messages WHERE id_user_1 = $1
+           UNION
+           SELECT id_user_1 FROM messages WHERE id_user_2 = $1
+       )`,
+      [currentUserId]
+    );
+    return result.rows;
+  } catch (err) {
+    fs.appendFileSync('../../Log.txt', new Date().toISOString() + ' Error fetching conversations: ' + err + '\n');
+    throw err;
+  }
+}
+
 module.exports = { getMessages, createMessage };

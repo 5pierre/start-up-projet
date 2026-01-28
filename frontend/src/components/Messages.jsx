@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { getMessages, postMessage } from '../services/messageService';
+import { useParams, useNavigate } from 'react-router-dom'; 
 
-export default function Messages({ user2Id }) {
+export default function Messages() {
+  const { id } = useParams();
+  const user2Id = parseInt(id);
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
 
   const loadMessages = async () => {
+    if (!user2Id) return;
     try {
-      const data = await getMessages();
+      const data = await getMessages(user2Id);
       setMessages(data.messages || []);
     } catch (err) {
       console.error('Erreur API:', err);
@@ -19,7 +24,7 @@ export default function Messages({ user2Id }) {
   const handleSend = async () => {
     if (!content.trim()) return;
     try {
-      await postMessage(content);
+      await postMessage(content, user2Id);
       setContent('');
       loadMessages(); // recharge la liste
     } catch (err) {
@@ -30,11 +35,16 @@ export default function Messages({ user2Id }) {
 
   useEffect(() => {
     loadMessages();
-  }, []);
+  }, [user2Id]);
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Messages</h2>
+      {/* Bouton retour pour revenir aux histoires */}
+      <button onClick={() => navigate('/')} style={{ marginBottom: '10px', cursor: 'pointer' }}>
+        ⬅ Retour aux histoires
+      </button>
+
+      <h2>Discussion avec l'utilisateur {user2Id}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div style={{ border: '1px solid gray', padding: '10px', marginBottom: '10px', height: '300px', overflowY: 'scroll' }}>
         {messages.map((msg) => (
@@ -43,6 +53,8 @@ export default function Messages({ user2Id }) {
           </div>
         ))}
       </div>
+
+      
       <input
         type="text"
         value={content}

@@ -37,7 +37,7 @@ const App = () => {
         <Route path="/" element={<StoryRead />} />
         <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/messages" element={<Messages user2Id={4} />} />
+        <Route path="/messages/:id" element={<Messages />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
 
       </Routes>
