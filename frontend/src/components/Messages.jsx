@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 export default function Messages() {
   const { id } = useParams();
-  const user2Id = parseInt(id);
+  const user2Id = Number.parseInt(id);
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');

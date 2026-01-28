@@ -51,6 +51,7 @@ async function createMessage(id_user_1, id_user_2, content) {
 
 async function getConversations(currentUserId) {
   try {
+
     const result = await pool.query(
       `SELECT u.id_user, u.name, u.photo, u.email
        FROM users u
@@ -68,4 +69,4 @@ async function getConversations(currentUserId) {
   }
 }
 
-module.exports = { getMessages, createMessage };
+module.exports = { getMessages, createMessage , getConversations};

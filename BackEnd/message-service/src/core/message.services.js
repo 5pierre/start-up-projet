@@ -19,11 +19,11 @@ async function getAllMessages(req, res) {
 
     const decodedToken = verifyToken(token);
     const user1 = decodedToken.id;  // utilisateur connecté
-    const user2 = parseInt(req.params.user2Id);
+    const user2 = Number.parseInt(req.params.user2Id);
 
     // const user2 = parseInt(req.params.user2Id); // utilisateur cible
     
-    if (!user2 || isNaN(user2)) {
+    if (!user2 || Number.isNaN(user2)) {
       return res.status(400).json({ error: "Valid user2Id is required" });
     }
 
@@ -52,9 +52,9 @@ async function createNewMessage(req, res) {
     const decodedToken = verifyToken(token);
     const user1 = decodedToken.id; // utilisateur connecté
     const { content, id_user_2 } = req.body;
-    const user2 = parseInt(id_user_2);
+    const user2 = Number.parseInt(id_user_2);
 
-    if (!user2 || isNaN(user2)) {
+    if (!user2 || Number.isNaN(user2)) {
         return res.status(400).json({ error: "Destinataire (id_user_2) manquant ou invalide" });
     }
 
