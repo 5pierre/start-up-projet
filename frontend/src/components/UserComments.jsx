@@ -2,18 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import StarRating from './StarRating';
+import RateUserForm from './RateUserForm';
 import { getUserComments, getUserRatingSummary } from '../services/noteService';
+import { getUser } from '../services/usersService';
 import '../styles/RegisterStyle.css';
 
 export default function UserComments() {
   const { id } = useParams();
   const navigate = useNavigate();
   const userId = Number.parseInt(id, 10);
+  const currentUserId = Number.parseInt(localStorage.getItem('userId'), 10);
 
   const [summary, setSummary] = useState({ average: 0, count: 0 });
   const [comments, setComments] = useState([]);
+  const [ratedUserName, setRatedUserName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showRateForm, setShowRateForm] = useState(false);
 
   useEffect(() => {
     if (!Number.isInteger(userId) || userId <= 0) {
@@ -26,15 +31,17 @@ export default function UserComments() {
       try {
         setLoading(true);
         setError(null);
-        const [sRes, cRes] = await Promise.all([
+        const [sRes, cRes, userRes] = await Promise.all([
           getUserRatingSummary(userId),
-          getUserComments(userId)
+          getUserComments(userId),
+          getUser(userId).catch(() => ({ data: { name: '' } })) // Optionnel: récupérer le nom
         ]);
         setSummary({
           average: sRes.data?.average ?? 0,
           count: sRes.data?.count ?? 0
         });
         setComments(cRes.data?.comments ?? []);
+        setRatedUserName(userRes.data?.name || '');
       } catch (err) {
         console.error('Erreur chargement commentaires:', err);
         setError("Impossible de charger les commentaires.");
@@ -45,6 +52,28 @@ export default function UserComments() {
 
     fetchAll();
   }, [userId]);
+
+  const handleRateSuccess = () => {
+    // Rafraîchir les données après une note envoyée
+    const fetchAll = async () => {
+      try {
+        const [sRes, cRes] = await Promise.all([
+          getUserRatingSummary(userId),
+          getUserComments(userId)
+        ]);
+        setSummary({
+          average: sRes.data?.average ?? 0,
+          count: sRes.data?.count ?? 0
+        });
+        setComments(cRes.data?.comments ?? []);
+      } catch (err) {
+        console.error('Erreur rafraîchissement:', err);
+      }
+    };
+    fetchAll();
+  };
+
+  const canRate = Number.isInteger(currentUserId) && currentUserId > 0 && currentUserId !== userId;
 
   return (
     <div className="container-login100" style={{ flexDirection: 'column' }}>
@@ -65,6 +94,28 @@ export default function UserComments() {
             ({summary.count} avis)
           </span>
         </div>
+
+        {/* Formulaire de notation - affiché seulement si connecté et pas soi-même */}
+        {canRate && (
+          <div style={{ marginBottom: 24 }}>
+            {!showRateForm ? (
+              <button
+                onClick={() => setShowRateForm(true)}
+                className="login100-form-btn"
+                style={{ width: '100%', maxWidth: 300 }}
+              >
+                ✨ Noter cet utilisateur
+              </button>
+            ) : (
+              <RateUserForm
+                ratedUserId={userId}
+                ratedUserName={ratedUserName}
+                onSuccess={handleRateSuccess}
+                onClose={() => setShowRateForm(false)}
+              />
+            )}
+          </div>
+        )}
 
         {loading && <p>Chargement...</p>}
         {error && <p style={{ color: 'red', fontWeight: 'bold' }}>Erreur: {error}</p>}
