@@ -5,6 +5,7 @@ import AdminPage from './components/AdminPage';
 import MentionsLegales from './components/MentionsLegales';
 import MessagingPage from './components/MessagingPage';
 import Messages from './components/Messages';
+import StoryRead from './components/StoryRead';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { logout } from './services/authService';
 import './App.css';
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/annonces" element={<StoryRead />} />
         <Route path="/messages/:id" element={<Messages />} />
         <Route path="/messages" element={<MessagingPage />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />

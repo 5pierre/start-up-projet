@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../logo.svg';
+import { logout } from '../services/authService';
+import logo from '../logostartup.png';
 
 export default function Navbar({ onSearchChange, onProfileClick }) {
   const navigate = useNavigate();
@@ -8,10 +9,9 @@ export default function Navbar({ onSearchChange, onProfileClick }) {
   const isAuthenticated = !!localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
 
-  const handleAuthClick = () => {
+  const handleAuthClick = async () => {
     if (isAuthenticated) {
-      // La déconnexion réelle est gérée ailleurs (authService/logout)
-      navigate('/register');
+      await logout();
     } else {
       navigate('/register');
     }
@@ -28,11 +28,13 @@ export default function Navbar({ onSearchChange, onProfileClick }) {
       <div className="navbar-left">
         <div className="navbar-logo" onClick={() => navigate('/')}>
           <img src={logo} alt="Logo" className="navbar-logo-img" />
-          <span className="navbar-logo-text">Discute Potins</span>
         </div>
         <nav className="navbar-links">
           <Link to="/" className="navbar-link">
             Accueil
+          </Link>
+          <Link to="/annonces" className="navbar-link">
+            Annonces
           </Link>
           <Link to="/messages" className="navbar-link">
             Messagerie

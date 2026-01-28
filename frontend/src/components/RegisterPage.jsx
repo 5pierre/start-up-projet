@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/RegisterStyle.css';
+import Navbar from './Navbar';
 import Footer from './Footer';
+import UserProfile from './UserProfile';
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,9 +60,20 @@ const handleAuthSuccess = (user, navigate) => {
 };
 
 const getErrorMessage = (isLoginMode, err) => {
+  // Gestion spécifique des erreurs CORS
+  if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || err.response?.status === 403) {
+    return 'Erreur de connexion au serveur. Vérifiez que le backend est démarré et que FRONTEND_ORIGIN dans le .env du backend inclut http://localhost:3001';
+  }
+  
+  if (err.response?.status === 401) {
+    return isLoginMode 
+      ? 'Identifiants incorrects. Veuillez réessayer.' 
+      : 'Erreur lors de l\'inscription. Veuillez réessayer.';
+  }
+  
   return isLoginMode 
-    ? 'Identifiants incorrects. Veuillez réessayer.' 
-    : (err.response?.data?.error || 'Erreur lors de l\'inscription. Veuillez réessayer.');
+    ? (err.response?.data?.message || 'Identifiants incorrects. Veuillez réessayer.')
+    : (err.response?.data?.error || err.response?.data?.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
 };
 
 export default function RegisterPage(){
@@ -77,6 +90,7 @@ export default function RegisterPage(){
   const [showPassword, setShowPassword] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState(null); // 'success' | 'error' | null
+  const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
 
   const toggleMode = () => {
@@ -131,7 +145,7 @@ export default function RegisterPage(){
     setStatusMessage('');
     setStatusType(null);
 
-    const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
+    const BASE_URL = process.env.REACT_APP_API_AUTH_URL || 'http://localhost:4000';
     const endpoint = isLoginMode ? 'login' : 'register';
     const url = `${BASE_URL}/${endpoint}`;
 
@@ -145,7 +159,18 @@ export default function RegisterPage(){
       }
     } catch (err) {
       const errorMessage = getErrorMessage(isLoginMode, err);
-      console.error('Erreur API:', err.response?.data || err.message);
+      // Log détaillé pour le débogage
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error' || err.response?.status === 403) {
+        console.error('Erreur CORS/Network détectée:', {
+          code: err.code,
+          message: err.message,
+          status: err.response?.status,
+          url: url,
+          suggestion: 'Vérifiez que FRONTEND_ORIGIN dans le .env du backend inclut http://localhost:3001'
+        });
+      } else {
+        console.error('Erreur API:', err.response?.data || err.message);
+      }
 
       setErrors((prev) => ({
         ...prev,
@@ -165,15 +190,12 @@ export default function RegisterPage(){
   const passwordCriteria = checkPasswordCriteria(form.password);
 
   return (
-    <div className="limiter">
-      <div className="container-login100">
-        {/* Petite navigation pour revenir à la lecture des histoires */}
-        <nav className="navbar">
-          <a href="/" className="home-btn">
-            ← Retour aux histoires
-          </a>
-        </nav>
-        <div className="wrap-login100">
+    <>
+      <Navbar onProfileClick={() => setShowProfile(true)} />
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+      <div className="limiter">
+        <div className="container-login100">
+          <div className="wrap-login100">
           <form className="login100-form validate-form" onSubmit={handleSubmit}>
             <span className="login100-form-title">
               {isLoginMode ? 'Connexion' : 'Inscription'}
@@ -322,5 +344,6 @@ export default function RegisterPage(){
       </div>
       <Footer />
     </div>
+    </>
   );
 }
