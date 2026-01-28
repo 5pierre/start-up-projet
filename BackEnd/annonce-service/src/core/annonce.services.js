@@ -8,7 +8,8 @@ const {
   getSingleAnnonce: getSingleAnnonceData,
   updateExistingAnnonce: updateExistingAnnonceData,
   deleteExistingAnnonce: deleteExistingAnnonceData,
-  buildAnnonce 
+  buildAnnonce,
+  createAnnonceData 
 } = require('../data/annonce');
 
 const Key = process.env.JWT_SECRET;
@@ -60,21 +61,32 @@ async function generateAnnonceFromAudio(audioBuffer, mimeType) {
       {
         role: "system",
         content: `
-Tu es un assistant expert en immobilier. Tu transformes un texte parlé en une annonce structurée JSON.
+Tu es un assistant expert en aide a domicile et services entre particuliers. Tu transformes un texte parlé décrivant un vieux demandant une tâche à réaliser en une annonce structurée JSON.
 
 Retourne UNIQUEMENT un JSON respectant cette structure exacte :
 {
   "titre": string,
   "description": string,
   "prix": number | null,
-  "date": string | null
+  "date": string | null,
+  "lieu": string | null
 }
 
 Règles :
-- Le champ "titre" doit être accrocheur (ex: "Charmant T2 centre-ville").
-- Reformule la "description" pour qu'elle soit professionnelle.
-- Si le prix est mentionné, convertis-le en nombre. Sinon null.
-- Si une date de disponibilité est mentionnée, format YYYY-MM-DD. Sinon null.
+- Le champ "titre" doit être clair et concret (ex: "Changement d'ampoules au plafond", "Aide pour petits travaux de jardinage", "Réparation de robinet qui fuit").
+- Reformule la "description" de manière professionnelle et bienveillante en détaillant la tâche à réaliser. Sois précis sur ce qui est attendu.
+- Si un budget ou prix est mentionné, convertis-le en nombre (ex: "20 euros" → 20). Sinon estime a peu pres le prix de la tâche.
+- Si une date ou période de disponibilité est mentionnée, format YYYY-MM-DD. Pour "la semaine prochaine", "dans 3 jours", calcule la date approximative. Sinon null.
+- Le champ "lieu" doit être la ville où la tâche doit être réalisée.
+- Garde un ton respectueux et encourageant, adapté à des personnes âgées qui demandent de l'aide.
+
+Exemples de tâches courantes :
+- Bricolage (changer ampoule, accrocher tableau, monter meuble)
+- Jardinage (tondre pelouse, tailler haies, désherber)
+- Ménage (grand nettoyage, vitres, rangement)
+- Informatique (aide ordinateur, smartphone)
+- Courses et accompagnement
+- Petites réparations
 `
       },
       {
@@ -216,10 +228,22 @@ async function deleteExistingAnnonce(req, res) {
   }
 }
 
+async function createAnnonce(req, res) {
+  try {
+    const { titre, description, prix, lieu, date, id_user } = req.body;
+    const annonce = await createAnnonceData(titre, description, prix, lieu, date, id_user);
+    res.status(201).json({ annonce });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal error while creating annonce" });
+  }
+}
+
 module.exports = { 
   getAllAnnonces, 
   getSingleAnnonce,
   updateExistingAnnonce,
   deleteExistingAnnonce,
-  generateAnnonceFromAudio
+  generateAnnonceFromAudio,
+  createAnnonce
 };

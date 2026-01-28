@@ -162,10 +162,24 @@ async function deleteExistingAnnonce(id, id_user) {
   }
 }
 
+async function createAnnonceData (titre, description, prix, lieu, date, id_user) {
+  try {
+    const result = await pool.query(
+      `INSERT INTO annonces (titre, description, prix, lieu, date, id_user) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [titre, description, prix, lieu, date, id_user]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error('Error creating annonce:', err);
+    throw err;
+  }
+}
+
 module.exports = {
   getAllAnnonces, 
   getSingleAnnonce,
   updateExistingAnnonce,
   deleteExistingAnnonce,
-  buildAnnonce
+  buildAnnonce,
+  createAnnonceData
 };

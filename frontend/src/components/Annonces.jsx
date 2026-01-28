@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   getAllAnnonces, 
   getSingleAnnonce, 
   updateExistingAnnonce, 
-  deleteExistingAnnonce 
+  deleteExistingAnnonce
 } from '../services/annonceService';
 
 export default function TestAnnonce() {
+  const navigate = useNavigate();
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,7 +76,6 @@ export default function TestAnnonce() {
 
   const handleDelete = async () => {
     try {
-      // ✅ deleteExistingAnnonce retourne déjà response.data
       const res = await deleteExistingAnnonce(testId);
       setRawResponse(res);
     } catch (e) {
@@ -139,6 +140,10 @@ export default function TestAnnonce() {
       <pre style={{ background: "#f5f5f5", padding: "10px" }}>
         {rawResponse ? JSON.stringify(rawResponse, null, 2) : "Aucun appel effectué pour l'instant."}
       </pre>
+
+      <button onClick={() => navigate('/create')}>
+        Créer une nouvelle annonce
+      </button>
     </div>
   );
 }

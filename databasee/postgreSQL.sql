@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS annonces (
     description TEXT,
     id_user INT REFERENCES users(id_user) ON DELETE CASCADE,
     date_publication TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date DATE,
     lieu VARCHAR(255),
     prix DECIMAL(10, 2),
     photo TEXT,

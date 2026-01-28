@@ -111,7 +111,7 @@ useEffect(() => {
             )}
             {isAuthenticated && (
                 <button
-                    onClick={() => navigate('/test')}
+                    onClick={() => navigate('/annonces')}
                     className="login100-form-btn-logout"
                     style={{ textAlign: 'center', right: '300px' }}
                 >

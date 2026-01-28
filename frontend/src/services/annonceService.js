@@ -65,3 +65,15 @@ export const generateAnnonceFromAudio = async (audioFile) => {
     throw error;
   }
 };
+
+export const createAnnonceData = async (annonceData) => {
+  try {
+    const response = await axios.post(API_URL, annonceData, {
+      withCredentials: true 
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating annonce:', error);
+    throw error;
+  }
+};

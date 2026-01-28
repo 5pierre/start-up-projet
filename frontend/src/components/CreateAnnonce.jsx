@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import AudioAssistant from './AudioAssistant';
-// import { createAnnonce } from '../services/annonceService'; // Si vous avez une fonction de création
+import { createAnnonceData } from '../services/annonceService'; 
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateAnnonce() {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     titre: '',
     description: '',
     prix: '',
     lieu: '',
-    date: ''
+    date: '',
+    id_user: localStorage.getItem('userId')
   });
 
   // Cette fonction est appelée automatiquement quand l'IA a fini
@@ -19,7 +23,7 @@ export default function CreateAnnonce() {
       titre: dataIA.titre || prev.titre,
       description: dataIA.description || prev.description,
       prix: dataIA.prix || prev.prix,
-      // On garde la date si format compatible, sinon on laisse vide
+      lieu: dataIA.lieu || prev.lieu, // L'IA remplit le lieu si détecté
       date: dataIA.date || prev.date 
     }));
   };
@@ -29,10 +33,24 @@ export default function CreateAnnonce() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Annonce à envoyer :", formData);
-    // Appeler ici votre service de création d'annonce (POST /annonces)
+    try {
+      console.log("Annonce à envoyer :", formData);
+      
+      // --- CORRECTION MAJEURE ICI ---
+      // On envoie l'objet entier 'formData' car votre service attend un objet unique
+      const result = await createAnnonceData(formData);
+      
+      console.log("Annonce créée :", result);
+      
+      alert("Annonce créée avec succès !");
+      navigate('/annonces');
+      
+    } catch (error) {
+      console.error("Erreur lors de la création :", error);
+      alert("Erreur lors de la création de l'annonce.");
+    }
   };
 
   return (
@@ -46,8 +64,9 @@ export default function CreateAnnonce() {
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
         
+        {/* TITRE */}
         <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>Titre de la tâche</label>
+          <label style={{ display: "block", marginBottom: "5px" }}>Titre de la tâche *</label>
           <input 
             type="text" 
             name="titre" 
@@ -55,39 +74,61 @@ export default function CreateAnnonce() {
             onChange={handleChange}
             style={{ width: "100%", padding: "8px" }}
             placeholder="Ex: Réparation de fuite d'eau"
+            required
           />
         </div>
 
+        {/* DESCRIPTION */}
         <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>Description détaillée</label>
+          <label style={{ display: "block", marginBottom: "5px" }}>Description détaillée *</label>
           <textarea 
             name="description" 
             value={formData.description} 
             onChange={handleChange}
             rows="5"
             style={{ width: "100%", padding: "8px" }}
+            required
+          />
+        </div>
+
+        {/* LIEU (Ajouté) */}
+        <div>
+          <label style={{ display: "block", marginBottom: "5px" }}>Lieu de la mission *</label>
+          <input 
+            type="text" 
+            name="lieu" 
+            value={formData.lieu} 
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px" }}
+            placeholder="Ex: Lyon, Paris 15ème..."
+            required
           />
         </div>
 
         <div style={{ display: "flex", gap: "20px" }}>
+          {/* PRIX */}
           <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>Prix proposé (€)</label>
+            <label style={{ display: "block", marginBottom: "5px" }}>Prix proposé (€) *</label>
             <input 
               type="number" 
               name="prix" 
               value={formData.prix || ''} 
               onChange={handleChange}
               style={{ width: "100%", padding: "8px" }}
+              required
             />
           </div>
+          
+          {/* DATE */}
           <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>Date souhaitée</label>
+            <label style={{ display: "block", marginBottom: "5px" }}>Date souhaitée *</label>
             <input 
               type="date" 
               name="date" 
               value={formData.date || ''} 
               onChange={handleChange}
               style={{ width: "100%", padding: "8px" }}
+              required
             />
           </div>
         </div>
@@ -101,7 +142,7 @@ export default function CreateAnnonce() {
             color: "white", 
             border: "none", 
             fontSize: "18px", 
-            cursor: "pointer" 
+            cursor: "pointer"
           }}
         >
           Valider l'annonce

@@ -10,7 +10,8 @@ const {
   getSingleAnnonce,
   updateExistingAnnonce,
   deleteExistingAnnonce,
-  generateAnnonceFromAudio 
+  generateAnnonceFromAudio ,
+  createAnnonce
 } = require('../core/annonce.services');
 
 router.post("/from-audio", upload.single("audio"), async (req, res) => {
@@ -18,8 +19,6 @@ router.post("/from-audio", upload.single("audio"), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No audio file uploaded" });
     }
-
-    // Passe le buffer directement au lieu du chemin fichier
     const annonce = await generateAnnonceFromAudio(req.file.buffer, req.file.mimetype);
     res.json(annonce);
 
@@ -29,6 +28,8 @@ router.post("/from-audio", upload.single("audio"), async (req, res) => {
   }
 });
 
+//CRUD operations
+router.post('/annonces', createAnnonce);
 router.get('/annonces', getAllAnnonces);           
 router.get('/annonces/:id', getSingleAnnonce);     
 router.put('/annonces/:id', updateExistingAnnonce);    
