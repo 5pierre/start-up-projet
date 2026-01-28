@@ -7,12 +7,10 @@ export default function Messages() {
   const { id } = useParams();
   const user2Id = parseInt(id); // On s'assure que c'est un entier
   const navigate = useNavigate();
-  
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
-  
-  // ✅ Référence pour le scroll automatique
+  const [showNotePopup, setShowNotePopup] = useState(false);
   const messagesEndRef = useRef(null);
 
   // 1. Charger l'historique au démarrage (via API REST)
@@ -82,9 +80,34 @@ export default function Messages() {
 
   return (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '90vh' }}>
-      <button onClick={() => navigate('/')} style={{ alignSelf: 'flex-start', marginBottom: '10px', cursor: 'pointer' }}>
-        ⬅ Retour aux histoires
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          {/* Bouton Retour à gauche */}
+          <button 
+            onClick={() => navigate('/')} 
+            style={{ cursor: 'pointer', padding: '5px 10px', fontSize: '1rem' }}
+          >
+            ⬅ Retour
+          </button>
+
+          {/* Titre au milieu */}
+          <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Discussion avec {user2Id}</h2>
+
+          {/* Bouton Note à droite */}
+          <button
+            onClick={() => setShowNotePopup(true)}
+            style={{ 
+                backgroundColor: '#ffc107', 
+                color: '#000', 
+                border: 'none', 
+                padding: '5px 15px', 
+                borderRadius: '5px', 
+                cursor: 'pointer',
+                fontWeight: 'bold'
+            }}
+          >
+            Note
+          </button>
+      </div>
 
       <h2>Discussion avec l'utilisateur {user2Id}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -118,7 +141,7 @@ export default function Messages() {
             );
         })}
         
-        {/* ✅ L'élément invisible pour scroller en bas */}
+        {/*L'élément invisible pour scroller en bas */}
         <div ref={messagesEndRef} />
       </div>
 
@@ -132,9 +155,42 @@ export default function Messages() {
             style={{ flex: 1, padding: '12px', borderRadius: '20px', border: '1px solid #ddd', outline: 'none' }}
         />
         <button type="submit" style={{ padding: '10px 20px', borderRadius: '20px', background: '#28a745', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
-            Envoyer 🚀
+            Envoyer
         </button>
       </form>
+
+      {/* LE POPUP NOTE (Code identique à StoryRead) */}
+      {showNotePopup && (
+        <div className="popup-overlay" onClick={() => setShowNotePopup(false)}>
+            <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+                <button className="close-btn" onClick={() => setShowNotePopup(false)}>×</button>
+                
+                <h2 style={{ marginBottom: '20px', color: '#333' }}>Note sur cette discussion 📝</h2>
+                
+                <p>Ajouter une note privée sur cet utilisateur :</p>
+                
+                <textarea 
+                    rows="4" 
+                    placeholder="Ex: Cet utilisateur aime parler de..."
+                    style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', margin: '15px 0' }}
+                />
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                    <button 
+                        className="login100-form-btn" // Assurez-vous que cette classe est accessible ou utilisez un style inline
+                        style={{ minWidth: '100px', backgroundColor: '#333', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                        onClick={() => {
+                            alert("Note enregistrée ! (Simulation)");
+                            setShowNotePopup(false);
+                        }}
+                    >
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }

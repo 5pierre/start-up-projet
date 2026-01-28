@@ -36,3 +36,49 @@
     transform: rotate(360deg);
   }
 }
+
+/* Fond sombre derrière le popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Noir transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Au-dessus de tout */
+}
+
+/* La boîte blanche du popup */
+.popup-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: center;
+  position: relative;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Petite animation d'apparition */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Bouton fermer (X) */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+}
+.close-btn:hover { color: red; }

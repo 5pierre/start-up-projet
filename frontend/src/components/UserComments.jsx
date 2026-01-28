@@ -59,6 +59,7 @@ export default function UserComments() {
 
         <h2 style={{ marginBottom: 10 }}>Commentaires</h2>
 
+          {/* notes et nombre d'avis */}
         <div style={{ marginBottom: 18 }}>
           <StarRating value={Number(summary.average) || 0} readOnly size={20} />
           <span style={{ marginLeft: 10, color: '#555' }}>
