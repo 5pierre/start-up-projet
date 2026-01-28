@@ -262,6 +262,68 @@
     background: #c6e6a8;
   }
 
+  /* État du bouton lorsqu'une requête est en cours */
+  .login100-form-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Messages de statut (succès / erreur) pour l'authentification */
+  .auth-status {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .auth-status-success {
+    background-color: #e6f6ec;
+    color: #256b3f;
+    border: 1px solid #8fd0aa;
+  }
+
+  .auth-status-error {
+    background-color: #fdeaea;
+    color: #b91c1c;
+    border: 1px solid #f5a1a1;
+  }
+
+  /* Mise en évidence des champs en erreur */
+  .input100.has-error {
+    border: 1px solid #ff4444;
+    background: #ffecec;
+  }
+
+  .error-message {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #ff4444;
+  }
+
+  /* Bouton pour afficher / masquer le mot de passe */
+  .password-toggle-btn {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    background: transparent;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+
+  .password-toggle-btn:hover {
+    color: #333;
+  }
+
   .login100-form-btn-logout {
     font-family: 'Montserrat-Bold', sans-serif;
     font-size: 15px;
