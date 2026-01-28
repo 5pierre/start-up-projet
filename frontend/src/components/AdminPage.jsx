@@ -178,6 +178,7 @@ useEffect(() => {
                     <p>Aucun utilisateur trouvé.</p>
                 )}
             </div>
+           
             <Footer />
         </div>
     );
