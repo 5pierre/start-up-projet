@@ -78,10 +78,26 @@ export default function UserProfile({ onClose }) {
                 {error && <p style={{ color: 'red', fontWeight: 'bold' }}>Erreur: {error}</p>}
 
                 {profile && (
-                    <div style={{ width: '100%' }}>
-                        <p><strong>Nom :</strong> {profile.name}</p>
-                        <p><strong>Email :</strong> {profile.email}</p>
-                        <p><strong>Rôle :</strong> {profile.role}</p>
+                    <div style={{ width: '100%', textAlign: 'center' }}>
+                        <div style={{ marginBottom: '20px' }}>
+                            <img
+                                src={profile.photo || '/default-avatar.png'}
+                                alt="Photo de profil"
+                                style={{
+                                width: '120px',
+                                height: '120px',
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                border: '3px solid #4CAF50'
+                                }}
+                            />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <p><strong>Nom :</strong> {profile.name}</p>
+                            <p><strong>Email :</strong> {profile.email}</p>
+                            <p><strong>Rôle :</strong> {profile.role}</p>
+                            <p><strong>Ville :</strong> {profile.ville || 'Non renseignée'}</p>
+                        </div>
                     </div>
                 )}
             </div>

@@ -16,7 +16,8 @@ const COOKIE_SETTING = {
 // REGISTER USER
 async function registerUser(req, res) {
   try {
-    const { name, email, password, profileData } = req.body;
+    const { name, email, password, profileData, ville } = req.body;
+    const photoPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email || !password || !name) {
@@ -32,13 +33,20 @@ async function registerUser(req, res) {
       return res.status(400).json({ error: "Email must be between 6 and 320 characters long" });
     }
 
-    //Longueur : Min/Max respectés pour name, email, password, profileData
+    //Longueur : Min/Max respectés pour name, email, password, profileData, ville, photo
     if (name.length < 3 || name.length > 50) {
       return res.status(400).json({ error: "Name must be between 3 and 50 characters long" });
     }
     if (profileData && profileData.length > 500) {
       return res.status(400).json({ error: "Profile data must be less than 500 characters long" });
     }
+    if (ville && ville.length > 100) {
+      return res.status(400).json({ error: "Ville too long" });
+    }
+    if (photoPath && photoPath.length > 500) {
+      return res.status(400).json({ error: "Photo path too long" });
+    }
+
 
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
@@ -62,7 +70,7 @@ async function registerUser(req, res) {
     fs.appendFileSync('../../Log.txt', new Date().toISOString() + " User does not exist, proceeding with registration\n");
 
     const hashed = await bcrypt.hash(password, 10);
-    const adduser = await addUser(name, email, hashed, "user", profileData);
+    const adduser = await addUser(name, email, hashed, "user", profileData, ville, photoPath);
 
     const token = jwt.sign({ 
       id: adduser.id, 

@@ -71,6 +71,8 @@ export default function RegisterPage(){
     password: '',
     role: 'user-non-connecte',
     profileData: '',
+    ville: '',
+    photo: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -88,6 +90,8 @@ export default function RegisterPage(){
       password: '',
       role: 'user-non-connecte',
       profileData: '',
+      ville: '',
+      photo: null
     });
     setErrors({});
     setStatusMessage('');
@@ -97,6 +101,11 @@ export default function RegisterPage(){
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    setForm((prev) => ({ ...prev, photo: file }));
   };
 
   const validateForm = () => {
@@ -136,7 +145,35 @@ export default function RegisterPage(){
     const url = `${BASE_URL}/${endpoint}`;
 
     try {
-      const res = await axios.post(url, form, { withCredentials: true });
+      let res;
+
+      if (isLoginMode) {
+        // Connexion : envoi JSON classique
+        res = await axios.post(
+          url,
+          {
+            email: form.email,
+            password: form.password,
+          },
+          { withCredentials: true }
+        );
+      } else {
+        // Inscription : envoi multipart/form-data pour gérer la photo
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('email', form.email);
+        formData.append('password', form.password);
+        formData.append('profileData', form.profileData);
+        formData.append('ville', form.ville);
+        if (form.photo) {
+          formData.append('photo', form.photo);
+        }
+
+        res = await axios.post(url, formData, {
+          withCredentials: true,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
       
       if (res.data?.user) {
         setStatusMessage(isLoginMode ? 'Connexion réussie, redirection en cours...' : 'Compte créé avec succès, redirection en cours...');
@@ -207,6 +244,27 @@ export default function RegisterPage(){
                     placeholder="Profil (bio, entreprise...)"
                     value={form.profileData}
                     onChange={handleChange}
+                  />
+                  <span className="focus-input100"></span>
+                </div>
+                <div className="wrap-input100">
+                  <input
+                    className="input100"
+                    type="text"
+                    name="ville"
+                    placeholder="Ville"
+                    value={form.ville}
+                    onChange={handleChange}
+                  />
+                  <span className="focus-input100"></span>
+                </div>
+                <div className="wrap-input100">
+                  <input
+                    className="input100"
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    onChange={handleFileChange}
                   />
                   <span className="focus-input100"></span>
                 </div>

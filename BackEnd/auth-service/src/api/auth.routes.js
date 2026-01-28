@@ -4,8 +4,24 @@ const { registerUser, loginUser} = require('../core/auth.services');
 const { findUserById, findUserByEmail, getAllUsers, deleteUserById } = require('../data/users');
 const jwt = require('jsonwebtoken');
 const fs = require('node:fs');
+const multer = require('multer');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const Key = process.env.JWT_SECRET;
+
+// Configuration de Multer pour l'upload de la photo de profil
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../../uploads/avatars'));
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname);
+        cb(null, uniqueSuffix + ext);
+    },
+});
+
+const upload = multer({ storage });
 
 // BRUT FORCE PROTECTION (attention blocaqge IP)
 const loginLimiter = rateLimit({
@@ -21,7 +37,17 @@ const verifyToken = (token) => {
     return jwt.verify(token, Key);
 };
 
-router.post('/register', registerUser);
+// Construit une URL complète pour la photo de profil
+function buildPhotoUrl(req, photoPath) {
+    if (!photoPath) return null;
+    // Si c'est déjà une URL absolue, on la renvoie telle quelle
+    if (photoPath.startsWith('http://') || photoPath.startsWith('https://')) {
+        return photoPath;
+    }
+    return `${req.protocol}://${req.get('host')}${photoPath}`;
+}
+
+router.post('/register', upload.single('photo'), registerUser);
 router.post('/login', loginLimiter, loginUser);
 
 router.post('/logout', (req, res) => {
@@ -99,7 +125,8 @@ router.get('/users/:id', async (req, res) => {
         const decoded = verifyToken(token);
         const user = await findUserById(Number.parseInt(req.params.id));
         if (user && user.email === decoded.email) {
-            res.status(200).json({ name: user.name, email: user.email, role: user.role });
+            const photoUrl = buildPhotoUrl(req, user.photo);
+            res.status(200).json({ name: user.name, email: user.email, role: user.role, ville: user.ville, photo: photoUrl });
         } else {
             res.status(404).send("invalid credentials"); 
         }
