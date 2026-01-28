@@ -17,12 +17,14 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "socket.io": "^4.8.3"
   }
 }

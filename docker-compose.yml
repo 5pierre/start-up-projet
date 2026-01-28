@@ -30,10 +30,10 @@ services:
     env_file:
       - .env
 
-  # 3. Backend Story
-  story:
+  # 3. Backend Message
+  message:
     # images: Nom de l'image pour Docker Hub pa sutilisé pour le moment
-    build: ./BACKEND/story-service
+    build: ./BACKEND/message-service
     ports:
       - "5000:5000"
     depends_on:
@@ -46,13 +46,18 @@ services:
     build: ./BackEnd/annonce-service
     ports:
       - "3002:3002" 
+  # 4. Backend Note
+  note:
+    build: ./BACKEND/note-service
+    ports:
+      - "6100:6100"
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
       - .env
 
-  # 4. Frontend React
+  # 5. Frontend React
   frontend:
     # images: Nom de l'image pour Docker Hub pas sutilisé pour le moment
     build: ./frontend

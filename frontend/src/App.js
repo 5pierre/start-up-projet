@@ -5,8 +5,10 @@ import AdminPage from "./components/AdminPage";
 import MentionsLegales from "./components/MentionsLegales";
 import TestAnnonce from "./components/Annonces"; 
 import CreateAnnonce from "./components/CreateAnnonce";
+import UserComments from "./components/UserComments";
+import Messages from "./components/Messages";
 import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { logout } from './services/authService';
+import { getMe } from './services/authService';
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -20,16 +22,25 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
 
   useEffect(() => {
-      const autoLogout = async () => {
+      const syncSession = async () => {
+          // Si on pense être connecté (localStorage), on vérifie le cookie.
+          if (!localStorage.getItem('userId')) return;
           try {
-              await logout();
+              const res = await getMe();
+              const user = res.data?.user;
+              if (user?.id) {
+                  localStorage.setItem('userId', user.id);
+                  localStorage.setItem('userName', user.name || '');
+                  localStorage.setItem('userRole', user.role || 'user');
+              }
           } catch (error) {
-              console.error("Erreur lors du logout forcé au démarrage:", error);
+              // Cookie expiré/invalide => on nettoie sans appeler /logout
+              localStorage.removeItem('userId');
+              localStorage.removeItem('userName');
+              localStorage.removeItem('userRole');
           }
       };
-      if (localStorage.getItem('userId')) {
-          autoLogout();
-      }
+      syncSession();
     }, []);
 
   return (
@@ -38,9 +49,11 @@ const App = () => {
         <Route path="/" element={<StoryRead />} />
         <Route path="/mentionsLegales" element={<MentionsLegales />}/>
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/messages/:id" element={<Messages />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         <Route path="/annonces" element={<TestAnnonce />} />
         <Route path="/create" element={<CreateAnnonce />} />
+        <Route path="/users/:id/comments" element={<UserComments />} />
 
       </Routes>
     </Router>

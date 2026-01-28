@@ -5,17 +5,22 @@ CREATE TABLE IF NOT EXISTS users (
     profileData VARCHAR(400) NOT NULL,
     password VARCHAR(500) NOT NULL,  
     name VARCHAR(30) NOT NULL,
-    -- firstname VARCHAR(30) NOT NULL,        
     ville VARCHAR(100),
     photo TEXT 
                  
 );
 
+-- Notes / avis: un user (author) note un autre user (rated)
+-- NOTE: on drop/recreate pour avoir un schéma propre.
+DROP TABLE IF EXISTS notes;
+
 CREATE TABLE IF NOT EXISTS notes (
     id SERIAL PRIMARY KEY,
-    note INT CHECK (note >= 0 AND note <= 5),
-    commentaire TEXT,
-    id_user INT REFERENCES users(id_user) ON DELETE CASCADE
+    stars INT NOT NULL CHECK (stars >= 1 AND stars <= 5),
+    comment TEXT,
+    rated_user_id INT NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
+    author_user_id INT NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS annonces (
@@ -95,4 +100,27 @@ SELECT
   NULL,
   TRUE
 FROM user_cte;
+-- =========================
+-- Données de test (seed)
+-- =========================
+-- Password en clair (pour vous): TestUserPass!123
+-- Hash bcrypt correspondant:
+-- $2b$10$V4QzzKzZUBj1CnfdxmUK3u9IGLsMp5wTrWfiJsOjhB79/OuTQmm9W
+
+INSERT INTO users (email, role, profileData, password, name, ville, photo)
+VALUES
+    ('notee@example.com', 'user', 'Profil user noté', '$2b$10$V4QzzKzZUBj1CnfdxmUK3u9IGLsMp5wTrWfiJsOjhB79/OuTQmm9W', 'User Notee', 'Paris', NULL),
+    ('auteur@example.com', 'user', 'Profil auteur',    '$2b$10$V4QzzKzZUBj1CnfdxmUK3u9IGLsMp5wTrWfiJsOjhB79/OuTQmm9W', 'User Auteur', 'Lyon', NULL);
+
+-- 1 avis de test: auteur -> noté
+INSERT INTO notes (stars, comment, rated_user_id, author_user_id)
+SELECT
+    5,
+    'Super prestation, très pro !',
+    u_rated.id_user,
+    u_author.id_user
+FROM users u_rated
+JOIN users u_author ON u_author.email = 'auteur@example.com'
+WHERE u_rated.email = 'notee@example.com';
+
 

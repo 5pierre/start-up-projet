@@ -71,15 +71,41 @@ export default function RegisterPage(){
     password: '',
     role: 'user-non-connecte',
     profileData: '',
+    ville: '',
+    photo: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [statusType, setStatusType] = useState(null); // 'success' | 'error' | null
   const navigate = useNavigate();
 
-  const toggleMode = () => setIsLoginMode(!isLoginMode);
+  const toggleMode = () => {
+    setIsLoginMode(!isLoginMode);
+    // on réinitialise le formulaire et les messages pour éviter de garder des erreurs de l'autre mode
+    setForm({
+      name: '',
+      email: '',
+      password: '',
+      role: 'user-non-connecte',
+      profileData: '',
+      ville: '',
+      photo: null
+    });
+    setErrors({});
+    setStatusMessage('');
+    setStatusType(null);
+    setShowPassword(false);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    setForm((prev) => ({ ...prev, photo: file }));
   };
 
   const validateForm = () => {
@@ -91,6 +117,15 @@ export default function RegisterPage(){
     const passwordError = validatePassword(form.password);
     if (passwordError) newErrors.password = passwordError;
 
+    if (!isLoginMode) {
+      // pour l'inscription on exige un nom renseigné
+      if (!form.name.trim()) {
+        newErrors.name = 'Le nom est requis';
+      } else if (form.name.trim().length < 3) {
+        newErrors.name = 'Le nom doit contenir au moins 3 caractères';
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -101,22 +136,61 @@ export default function RegisterPage(){
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setErrors((prev) => ({ ...prev, api: null }));
+    setStatusMessage('');
+    setStatusType(null);
 
     const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
     const endpoint = isLoginMode ? 'login' : 'register';
     const url = `${BASE_URL}/${endpoint}`;
 
     try {
-      const res = await axios.post(url, form, { withCredentials: true });
+      let res;
+
+      if (isLoginMode) {
+        // Connexion : envoi JSON classique
+        res = await axios.post(
+          url,
+          {
+            email: form.email,
+            password: form.password,
+          },
+          { withCredentials: true }
+        );
+      } else {
+        // Inscription : envoi multipart/form-data pour gérer la photo
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('email', form.email);
+        formData.append('password', form.password);
+        formData.append('profileData', form.profileData);
+        formData.append('ville', form.ville);
+        if (form.photo) {
+          formData.append('photo', form.photo);
+        }
+
+        res = await axios.post(url, formData, {
+          withCredentials: true,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
       
       if (res.data?.user) {
+        setStatusMessage(isLoginMode ? 'Connexion réussie, redirection en cours...' : 'Compte créé avec succès, redirection en cours...');
+        setStatusType('success');
         handleAuthSuccess(res.data.user, navigate);
       }
     } catch (err) {
       const errorMessage = getErrorMessage(isLoginMode, err);
-      alert(`Erreur : ${errorMessage}`);
       console.error('Erreur API:', err.response?.data || err.message);
 
+      setErrors((prev) => ({
+        ...prev,
+        api: errorMessage,
+      }));
+      setStatusMessage(errorMessage);
+      setStatusType('error');
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -130,6 +204,12 @@ export default function RegisterPage(){
   return (
     <div className="limiter">
       <div className="container-login100">
+        {/* Petite navigation pour revenir à la lecture des histoires */}
+        <nav className="navbar">
+          <a href="/" className="home-btn">
+            ← Retour aux histoires
+          </a>
+        </nav>
         <div className="wrap-login100">
           <form className="login100-form validate-form" onSubmit={handleSubmit}>
             <span className="login100-form-title">
@@ -167,6 +247,27 @@ export default function RegisterPage(){
                   />
                   <span className="focus-input100"></span>
                 </div>
+                <div className="wrap-input100">
+                  <input
+                    className="input100"
+                    type="text"
+                    name="ville"
+                    placeholder="Ville"
+                    value={form.ville}
+                    onChange={handleChange}
+                  />
+                  <span className="focus-input100"></span>
+                </div>
+                <div className="wrap-input100">
+                  <input
+                    className="input100"
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <span className="focus-input100"></span>
+                </div>
               </>
             )}
 
@@ -185,7 +286,7 @@ export default function RegisterPage(){
                 <i className="fa fa-envelope" aria-hidden="true"></i>
               </span>
               {errors.email && (
-                <span className="error-message" style={{ color: '#ff4444', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                <span className="error-message">
                   {errors.email}
                 </span>
               )}
@@ -194,7 +295,7 @@ export default function RegisterPage(){
             <div className="wrap-input100 validate-input">
               <input
                 className={`input100 ${errors.password ? 'has-error' : ''}`}
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="Mot de passe"
                 value={form.password}
@@ -205,8 +306,16 @@ export default function RegisterPage(){
               <span className="symbol-input100">
                 <i className="fa fa-lock" aria-hidden="true"></i>
               </span>
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              >
+                {showPassword ? 'Masquer' : 'Afficher'}
+              </button>
               {errors.password && (
-                <span className="error-message" style={{ color: '#ff4444', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                <span className="error-message">
                   {errors.password}
                 </span>
               )}
@@ -227,18 +336,17 @@ export default function RegisterPage(){
             )}
 
             <div className="container-login100-form-btn">
-              {errors.api && (
-                <div style={{ color: '#ff4444', marginBottom: '10px', textAlign: 'center' }}>
-                  {errors.api}
+              {statusMessage && (
+                <div className={`auth-status ${statusType === 'error' ? 'auth-status-error' : 'auth-status-success'}`}>
+                  {statusMessage}
                 </div>
               )}
               <button 
                 className="login100-form-btn" 
                 type="submit"
                 disabled={isSubmitting}
-                style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
               >
-                {getButtonLabel()}
+                {isSubmitting ? (isLoginMode ? 'Connexion en cours...' : 'Création du compte...') : getButtonLabel()}
               </button>
             </div>
 

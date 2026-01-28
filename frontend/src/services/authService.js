@@ -22,3 +22,9 @@ export const logout = async () => {
       window.location.href = '/register'; 
     }
 };
+
+export const getMe = async () => {
+  return axios.get(`${BASE_URL}/me`, {
+    withCredentials: true
+  });
+};

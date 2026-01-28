@@ -1,31 +1,33 @@
 const express = require('express');
 const cors = require('cors');
-const storyRoutes = require('./src/api/story.routes'); 
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+
+const noteRoutes = require('./src/api/note.routes');
+
 const app = express();
 
-const PORT = process.env.PORT_STORY;
+const PORT = process.env.PORT_NOTE || 6100;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
 
-app.use(cors({ 
-    origin: FRONTEND_ORIGIN, // Exemple en PROD
+app.use(
+  cors({
+    origin: FRONTEND_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}));
+    credentials: true
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 
-app.set('trust proxy', 1); 
+app.set('trust proxy', 1);
 
-app.use('/api/story', storyRoutes);
+app.use('/api/note', noteRoutes);
 
-// Port d'écoute du Story Service
-const port = PORT;
-
-app.listen(port, () => {
-    console.log(`Story-service running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Note-service running at http://localhost:${PORT}`);
 });
+

@@ -9,12 +9,12 @@ const fs = require('node:fs');
   .then(() => console.log('Connecté à PostgreSQL avec succès'))
   .catch(err => console.error('Erreur de connexion à PostgreSQL', err));
 
-  async function addUser(name, email, hashedPassword, role, profileData) {
+  async function addUser(name, email, hashedPassword, role, profileData, ville, photo) {
     const result = await pool.query(
-      `INSERT INTO users(name, email, password, role, profileData) 
-       VALUES($1, $2, $3, $4, $5) 
+      `INSERT INTO users(name, email, password, role, profileData, ville, photo) 
+       VALUES($1, $2, $3, $4, $5, $6, $7) 
        RETURNING id_user AS id, name, email, role, profileData AS profileData`,
-      [name, email, hashedPassword, role, profileData]
+      [name, email, hashedPassword, role, profileData, ville, photo]
     );
     return result.rows[0];
   }
