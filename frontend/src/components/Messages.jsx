@@ -16,7 +16,7 @@ export default function Messages() {
   const messagesEndRef = useRef(null);
 
   // 1. Charger l'historique au démarrage (via API REST)
-  const loadHistory = async () => {
+  const loadMessages = async () => {
     if (!user2Id) return;
     try {
       const data = await getMessages(user2Id);
@@ -28,7 +28,7 @@ export default function Messages() {
   };
 
   useEffect(() => {
-    loadHistory();
+    loadMessages();
   }, [user2Id]);
 
   // 2. Gestion WebSocket (Écoute des messages)

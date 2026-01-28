@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/RegisterStyle.css';
 import Footer from './Footer';
-import { getStories } from '../services/storyService';
 import { getConversations } from '../services/messageService';
 import { logout } from '../services/authService';
 import UserProfile from './UserProfile';
@@ -11,28 +10,9 @@ import UserProfile from './UserProfile';
 export default function StoryRead() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-  const [stories, setStories] = useState([]);
   const [conversations, setConversations] = useState([]);
-  const [error, setError] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showContacts, setShowContacts] = useState(false);
-
-  const fetchStories = async () => {
-    try {
-      setError(null);
-      const response = await getStories(); 
-      
-      if (response && response.data && response.data.stories) {
-        setStories(response.data.stories); 
-      } else {
-        setStories([]);
-      }
-    } catch (err) {
-      console.error('Erreur lors du chargement des histoires:', err);
-      setError('Impossible de charger les histoires. Veuillez vérifier la connexion à l\'API.');
-      setStories([]);
-    }
-  };
 
   const fetchConversations = async () => {
     try {
@@ -48,8 +28,6 @@ export default function StoryRead() {
     const userId = localStorage.getItem('userId');
     const isAuth = !!userId;
     setIsAuthenticated(isAuth);
-    
-    fetchStories();
 
     // Si connecté, on charge aussi les conversations
     if (isAuth) {
@@ -59,8 +37,7 @@ export default function StoryRead() {
 
   const handleLogout = async () => {
     await logout();
-    setIsAuthenticated(false); // Mise à jour de l'état local
-    setStories([]); // Optionnel : vider les histoires
+    setIsAuthenticated(false); // Mise à jour de l'état local 
     setConversations([]); // Optionnel : vider les conversations
     setShowContacts(false);
     // navigate('/register'); // Optionnel : rediriger
@@ -74,9 +51,6 @@ export default function StoryRead() {
     }
   };
 
-  const addStory = (newStory) => {
-    setStories([newStory, ...stories]);
-  };
 
   return (
     <div className="container-login100">
@@ -107,7 +81,7 @@ export default function StoryRead() {
         )}
         {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center' }}>
-        <h1>Bienvenue sur Discute Potins 🎉</h1>
+        <h1>Bienvenue sur Discute Potins</h1>
 
         {/* --- SECTION CONTACTS (TABLEAU) --- */}
         {isAuthenticated && (
@@ -119,7 +93,7 @@ export default function StoryRead() {
                     className="login100-form-btn"
                     style={{ margin: '0 auto 20px auto', backgroundColor: '#333' }}
                 >
-                    {showContacts ? 'Masquer mes discussions 🙈' : 'Voir avec qui j\'ai discuté 📋'}
+                    {showContacts ? 'Masquer mes discussions' : 'Voir avec qui j\'ai discuté'}
                 </button>
 
                 {/* 2. Le Tableau qui s'affiche au clic */}
@@ -131,24 +105,12 @@ export default function StoryRead() {
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ backgroundColor: '#f2f2f2', borderBottom: '2px solid #ddd' }}>
-                                        <th style={{ padding: '12px', textAlign: 'left' }}>Utilisateur</th>
-                                        <th style={{ padding: '12px', textAlign: 'left' }}>Email</th>
-                                        <th style={{ padding: '12px', textAlign: 'center' }}>Action</th>
+                                        <th style={{ padding: '12px', textAlign: 'center' }}>Utilisateur</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {conversations.map((user) => (
                                         <tr key={user.id_user} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>
-                                                {/* Petit avatar ou initiale */}
-                                                <span style={{ marginRight: '10px', backgroundColor: '#ddd', borderRadius: '50%', padding: '5px 10px' }}>
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </span>
-                                                {user.name}
-                                            </td>
-                                            <td style={{ padding: '12px', textAlign: 'left', color: '#666' }}>
-                                                {user.email || 'Non renseigné'}
-                                            </td>
                                             <td style={{ padding: '12px', textAlign: 'center' }}>
                                                 <button
                                                     onClick={() => navigate(`/messages/${user.id_user}`)}
@@ -161,7 +123,10 @@ export default function StoryRead() {
                                                         cursor: 'pointer'
                                                     }}
                                                 >
-                                                    Ouvrir le chat 💬
+                                                     <span style={{ marginRight: '10px', backgroundColor: '#ddd', borderRadius: '50%', padding: '5px 10px' }}>
+                                                        {user.name.charAt(0).toUpperCase()}
+                                                    </span>
+                                                     {user.name}
                                                 </button>
                                             </td>
                                         </tr>
@@ -174,29 +139,11 @@ export default function StoryRead() {
             </div>
         )}
 
-        {/* --- NOUVELLE SECTION : MES DISCUSSIONS --- */}
-        {isAuthenticated && conversations.length > 0 && (
-            <div style={{ width: '100%', marginBottom: '30px' }}>
-                <h3>Mes discussions</h3>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}>
-                    {conversations.map((user) => (
-                        <button
-                            key={user.id_user}
-                            onClick={() => navigate(`/messages/${user.id_user}`)} // REDIRECTION
-                            className="login100-form-btn" // Ou une autre classe CSS
-                            style={{ width: 'auto', padding: '0 20px', minWidth: '150px' }}
-                        >
-                            {user.name} 💬
-                        </button>
-                    ))}
-                </div>
-            </div>
-        )}
 
-        {/* 2. NOUVELLE SECTION : BOUTONS DE TEST (Ajoutez ceci) */}
+      {/* 2. NOUVELLE SECTION : BOUTONS DE TEST (Ajoutez ceci) */}
       {isAuthenticated && (
         <div style={{ width: '100%', marginBottom: '30px', padding: '20px', border: '2px dashed #ccc', borderRadius: '10px' }}>
-            <h3>🚀 Démarrer une nouvelle discussion (Test)</h3>
+            <h3> Démarrer une nouvelle discussion (Test)</h3>
             <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Cliquez pour écrire à :</p>
             
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>

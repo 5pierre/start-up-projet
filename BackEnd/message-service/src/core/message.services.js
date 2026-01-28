@@ -20,8 +20,6 @@ async function getAllMessages(req, res) {
     const decodedToken = verifyToken(token);
     const user1 = decodedToken.id;  // utilisateur connecté
     const user2 = Number.parseInt(req.params.user2Id);
-
-    // const user2 = parseInt(req.params.user2Id); // utilisateur cible
     
     if (!user2 || Number.isNaN(user2)) {
       return res.status(400).json({ error: "Valid user2Id is required" });
@@ -79,8 +77,6 @@ async function createNewMessage(req, res) {
       fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Message created successfully\n");
 
   } catch (err) {
-    //fs.appendFileSync('../../Log.txt', new Date().toISOString() + " Error creating message: " + err + "\n");
-    //res.status(500).json({ error: "Internal error while creating message" });
     console.error("CREATE MESSAGE ERROR:", err);
     fs.appendFileSync(
     '../../Log.txt',
