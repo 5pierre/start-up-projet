@@ -18,3 +18,5 @@ ajouter https, securité des communication ect
 ssl?
 
 refaire le readme et retirer images inutiles
+
+supprimer dans les docker file le copy packtage node ?

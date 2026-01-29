@@ -21,7 +21,7 @@ export default function MentionsLegales() {
                 <h3>Éditeur du site :</h3>
                 <p>les p&apos;tits vieux</p>
                 <p>Adresse : ...</p>
-                <p>Email : discutePOTINS@2911.net</p>
+                <p>Email : lespetitsvieux@2911.net</p>
           </div>
         </div>
       </div>
