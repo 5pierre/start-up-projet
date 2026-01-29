@@ -54,7 +54,7 @@ async function getAllAnnonces(searchTerm = null) {
         u.ville AS author_ville
       FROM annonces a
       JOIN users u ON a.id_user = u.id_user
-      WHERE a.is_valide = true
+      WHERE 1=1
     `;
 
     const params = [];
@@ -165,7 +165,9 @@ async function deleteExistingAnnonce(id, id_user) {
 async function createAnnonceData (titre, description, prix, lieu, date, id_user) {
   try {
     const result = await pool.query(
-      `INSERT INTO annonces (titre, description, prix, lieu, date, id_user) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      `INSERT INTO annonces (titre, description, prix, lieu, date, id_user)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
       [titre, description, prix, lieu, date, id_user]
     );
     return result.rows[0];
