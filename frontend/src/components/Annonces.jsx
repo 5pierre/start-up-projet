@@ -12,6 +12,7 @@ export default function TestAnnonce() {
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const currentUserId = parseInt(localStorage.getItem('userId'), 10);
 
   // Pour tester les autres routes
   const [testId, setTestId] = useState('');
@@ -66,7 +67,6 @@ export default function TestAnnonce() {
 
   const handleUpdate = async () => {
     try {
-      // ✅ updateExistingAnnonce retourne déjà response.data
       const res = await updateExistingAnnonce(testId, { titre: updateTitre });
       setRawResponse(res);
     } catch (e) {
@@ -92,12 +92,40 @@ export default function TestAnnonce() {
         <p>Aucune annonce pour le moment.</p>
       ) : (
         <ul>
-          {annonces.map((a, index) => (
-            <li key={a.id || index}>
-              <strong>{a.titre || "Sans titre"}</strong>
-              {a.prix && ` - ${a.prix}€`}
-            </li>
-          ))}
+          {annonces.map((a, index) => {
+              // 1. On ouvre les accolades pour calculer la variable
+              const isMyAnnonce = currentUserId === a.id_user;
+
+              // 2. IL FAUT AJOUTER "return" ICI
+              return (
+                <li key={a.id || index}>
+                  <strong>{a.titre || "Sans titre"}</strong>
+                  {a.prix && ` - ${a.prix}€`}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    
+                    {!isMyAnnonce && currentUserId ? (
+                      <button
+                        onClick={() => navigate(`/messages/${a.id_user}`)}
+                        className="login100-form-btn"
+                        style={{ 
+                          width: 'auto', 
+                          minWidth: '120px', 
+                          backgroundColor: '#28a745', 
+                          height: '40px', 
+                          cursor: 'pointer',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '5px',
+                          padding: '0 15px'
+                        }}
+                      >
+                        Contacter le vendeur
+                      </button>
+                  ) : (null)}
+                </div>
+              </li>
+            ); // Fin du return
+          })}
         </ul>
       )}
 
