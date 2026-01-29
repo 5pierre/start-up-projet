@@ -1,153 +1,169 @@
 import React, { useState } from 'react';
-import AudioAssistant from './AudioAssistant';
-import { createAnnonceData } from '../services/annonceService'; 
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import UserProfile from './UserProfile';
+import AudioAssistant from './AudioAssistant';
+import { createAnnonceData } from '../services/annonceService';
+import '../styles/RegisterStyle.css';
+import './CreateAnnonce.css';
 
 export default function CreateAnnonce() {
   const navigate = useNavigate();
-  
+  const [showProfile, setShowProfile] = useState(false);
   const [formData, setFormData] = useState({
     titre: '',
     description: '',
     prix: '',
     lieu: '',
     date: '',
-    id_user: localStorage.getItem('userId')
+    id_user: localStorage.getItem('userId'),
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Cette fonction est appelée automatiquement quand l'IA a fini
   const handleAutoFill = (dataIA) => {
-    console.log("Données reçues de l'IA :", dataIA);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       titre: dataIA.titre || prev.titre,
       description: dataIA.description || prev.description,
-      prix: dataIA.prix || prev.prix,
-      lieu: dataIA.lieu || prev.lieu, // L'IA remplit le lieu si détecté
-      date: dataIA.date || prev.date 
+      prix: dataIA.prix != null ? dataIA.prix : prev.prix,
+      lieu: dataIA.lieu || prev.lieu,
+      date: dataIA.date || prev.date,
     }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setSubmitting(true);
     try {
-      console.log("Annonce à envoyer :", formData);
-      
-      // --- CORRECTION MAJEURE ICI ---
-      // On envoie l'objet entier 'formData' car votre service attend un objet unique
-      const result = await createAnnonceData(formData);
-      
-      console.log("Annonce créée :", result);
-      
-      alert("Annonce créée avec succès !");
+      await createAnnonceData(formData);
       navigate('/annonces');
-      
-    } catch (error) {
-      console.error("Erreur lors de la création :", error);
-      alert("Erreur lors de la création de l'annonce.");
+    } catch (err) {
+      console.error('Création annonce:', err);
+      setError(err.response?.data?.error || "Erreur lors de la création de l'annonce.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px", fontFamily: "Arial" }}>
-      <h1>Créer une nouvelle annonce</h1>
-      
-      {/* Intégration du composant vocal */}
-      <AudioAssistant onAnnonceGenerated={handleAutoFill} />
+    <>
+      <Navbar onProfileClick={() => setShowProfile(true)} />
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+      <div className="page-create-annonce">
+        <div className="create-annonce-wrap card">
+          <h1 className="create-annonce-title">Créer une annonce</h1>
+          <p className="create-annonce-subtitle">
+            Décrivez la tâche ou le service que vous proposez ou recherchez.
+          </p>
 
-      <hr style={{ margin: "30px 0" }} />
+          <AudioAssistant onAnnonceGenerated={handleAutoFill} />
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-        
-        {/* TITRE */}
-        <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>Titre de la tâche *</label>
-          <input 
-            type="text" 
-            name="titre" 
-            value={formData.titre} 
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-            placeholder="Ex: Réparation de fuite d'eau"
-            required
-          />
+          <form onSubmit={handleSubmit} className="create-annonce-form">
+            <div className="form-group">
+              <label htmlFor="titre">Titre de la tâche *</label>
+              <input
+                id="titre"
+                type="text"
+                name="titre"
+                value={formData.titre}
+                onChange={handleChange}
+                placeholder="Ex. : Réparation de fuite d'eau, Aide jardinage…"
+                required
+                className="input100"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Description détaillée *</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={5}
+                placeholder="Décrivez la mission, les compétences requises, etc."
+                required
+                className="story-textarea"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lieu">Lieu *</label>
+              <input
+                id="lieu"
+                type="text"
+                name="lieu"
+                value={formData.lieu}
+                onChange={handleChange}
+                placeholder="Ex. : Lyon, Paris 15e…"
+                required
+                className="input100"
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="prix">Prix proposé (€) *</label>
+                <input
+                  id="prix"
+                  type="number"
+                  name="prix"
+                  value={formData.prix || ''}
+                  onChange={handleChange}
+                  min="0"
+                  step="1"
+                  required
+                  className="input100"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="date">Date souhaitée *</label>
+                <input
+                  id="date"
+                  type="date"
+                  name="date"
+                  value={formData.date || ''}
+                  onChange={handleChange}
+                  required
+                  className="input100"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="alert alert-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="create-annonce-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => navigate('/annonces')}
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={submitting}
+              >
+                {submitting ? 'Envoi…' : 'Publier l\'annonce'}
+              </button>
+            </div>
+          </form>
         </div>
-
-        {/* DESCRIPTION */}
-        <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>Description détaillée *</label>
-          <textarea 
-            name="description" 
-            value={formData.description} 
-            onChange={handleChange}
-            rows="5"
-            style={{ width: "100%", padding: "8px" }}
-            required
-          />
-        </div>
-
-        {/* LIEU (Ajouté) */}
-        <div>
-          <label style={{ display: "block", marginBottom: "5px" }}>Lieu de la mission *</label>
-          <input 
-            type="text" 
-            name="lieu" 
-            value={formData.lieu} 
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-            placeholder="Ex: Lyon, Paris 15ème..."
-            required
-          />
-        </div>
-
-        <div style={{ display: "flex", gap: "20px" }}>
-          {/* PRIX */}
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>Prix proposé (€) *</label>
-            <input 
-              type="number" 
-              name="prix" 
-              value={formData.prix || ''} 
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-              required
-            />
-          </div>
-          
-          {/* DATE */}
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>Date souhaitée *</label>
-            <input 
-              type="date" 
-              name="date" 
-              value={formData.date || ''} 
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-              required
-            />
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          style={{ 
-            marginTop: "20px", 
-            padding: "15px", 
-            backgroundColor: "#28a745", 
-            color: "white", 
-            border: "none", 
-            fontSize: "18px", 
-            cursor: "pointer"
-          }}
-        >
-          Valider l'annonce
-        </button>
-      </form>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }

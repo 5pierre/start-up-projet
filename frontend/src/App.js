@@ -5,7 +5,7 @@ import RegisterPage from './components/RegisterPage';
 import AdminPage from './components/AdminPage';
 import MentionsLegales from './components/MentionsLegales';
 import MessagingPage from './components/MessagingPage';
-import TestAnnonce from './components/Annonces';
+import Annonces from './components/Annonces';
 import CreateAnnonce from './components/CreateAnnonce';
 import UserComments from './components/UserComments';
 import Messages from './components/Messages';
@@ -49,7 +49,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/mentionsLegales" element={<MentionsLegales />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/annonces" element={<TestAnnonce />} />
+        <Route path="/annonces" element={<Annonces />} />
         <Route path="/story" element={<StoryRead />} />
         <Route path="/create" element={<CreateAnnonce />} />
         <Route path="/users/:id/comments" element={<UserComments />} />
