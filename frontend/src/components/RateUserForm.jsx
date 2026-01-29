@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StarRating from './StarRating';
-import { rateUser } from '../services/noteService';
+import { rateUser, getMyRating } from '../services/noteService';
 import '../styles/RegisterStyle.css';
 import './RateUserForm.css';
 
@@ -10,6 +10,23 @@ export default function RateUserForm({ ratedUserId, ratedUserName, onSuccess, on
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (ratedUserId) {
+      getMyRating(ratedUserId)
+        .then((response) => {
+          if (response.data) {
+            // Si une note existe, on pré-remplit les champs
+            setStars(response.data.stars);
+            setComment(response.data.comment || '');
+          }
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la récupération de l'avis existant", err);
+        });
+    }
+  }, [ratedUserId]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,8 +41,6 @@ export default function RateUserForm({ ratedUserId, ratedUserName, onSuccess, on
     try {
       await rateUser({ ratedUserId, stars, comment: comment.trim() || undefined });
       setStatus('success');
-      setStars(0);
-      setComment('');
       if (onSuccess) onSuccess();
       if (onClose) setTimeout(onClose, 800);
     } catch (err) {

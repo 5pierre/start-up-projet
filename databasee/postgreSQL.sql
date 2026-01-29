@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS notes (
     comment TEXT,
     rated_user_id INT NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
     author_user_id INT NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_rating UNIQUE (rated_user_id, author_user_id)
 );
 
 CREATE TABLE IF NOT EXISTS annonces (
@@ -126,5 +127,6 @@ SELECT
 FROM users u_rated
 JOIN users u_author ON u_author.email = 'auteur@example.com'
 WHERE u_rated.email = 'notee@example.com';
+
 
 

@@ -14,6 +14,11 @@ async function createNote({ ratedUserId, authorUserId, stars, comment }) {
     `
     INSERT INTO notes (stars, comment, rated_user_id, author_user_id)
     VALUES ($1, $2, $3, $4)
+    ON CONFLICT (rated_user_id, author_user_id) 
+    DO UPDATE SET 
+      stars = EXCLUDED.stars, 
+      comment = EXCLUDED.comment,
+      created_at = CURRENT_TIMESTAMP
     RETURNING id, stars, comment, rated_user_id, author_user_id, created_at
     `,
     [stars, comment ?? null, ratedUserId, authorUserId]
@@ -55,9 +60,22 @@ async function getCommentsForUser(ratedUserId) {
   return result.rows;
 }
 
+async function getNoteByAuthorAndRated(authorId, ratedId) {
+  const result = await pool.query(
+    `
+    SELECT stars, comment
+    FROM notes
+    WHERE author_user_id = $1 AND rated_user_id = $2
+    `,
+    [authorId, ratedId]
+  );
+  return result.rows[0];
+}
+
 module.exports = {
   createNote,
   getRatingSummary,
-  getCommentsForUser
+  getCommentsForUser,
+  getNoteByAuthorAndRated
 };
 
