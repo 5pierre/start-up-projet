@@ -28,6 +28,8 @@ const FormData = require('form-data');
 
 
 async function generateAnnonceFromAudio(audioBuffer, mimeType) {
+  console.log('Clé API:', process.env.OPENAI_API_KEY ? 'Présente ✅' : 'MANQUANTE ❌');
+  console.log('Longueur de la clé:', process.env.OPENAI_API_KEY?.length || 0);
   
   // Créer un FormData avec le buffer
   const form = new FormData();

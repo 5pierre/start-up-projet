@@ -6,6 +6,7 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const isUploadingRef = useRef(false);
 
   const startRecording = async () => {
     try {
@@ -21,6 +22,7 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
 
       mediaRecorderRef.current = new MediaRecorder(stream, options);
       audioChunksRef.current = [];
+      isUploadingRef.current = false;
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -30,6 +32,12 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
 
       mediaRecorderRef.current.onstop = async () => {
         // Création du blob final
+        if (isUploadingRef.current) {
+          console.log('⚠️ Upload déjà en cours, abandon de ce déclenchement');
+          return;
+        }
+        
+        isUploadingRef.current = true;
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' }); // Webm est souvent le défaut
         
         // Arrêt des pistes (micro)
@@ -38,7 +46,7 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
         await handleAudioUpload(audioBlob);
       };
 
-      mediaRecorderRef.current.start();
+      mediaRecorderRef.current.start(1000);
       setIsRecording(true);
     } catch (err) {
       console.error("Erreur d'accès au micro:", err);
@@ -54,17 +62,27 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
   };
 
   const handleAudioUpload = async (audioBlob) => {
+    // ✅ Double protection au niveau de la fonction aussi
+    if (isProcessing) {
+      console.log('⚠️ Traitement déjà en cours, requête ignorée');
+      return;
+    }
+    
     setIsProcessing(true);
     try {
+      console.log('📤 Envoi de l\'audio à l\'API...');
       const data = await generateAnnonceFromAudio(audioBlob);
+      console.log('✅ Réponse reçue:', data);
+      
       if (onAnnonceGenerated) {
         onAnnonceGenerated(data);
       }
     } catch (error) {
-      console.error(error);
+      console.error('❌ Erreur:', error);
       alert("Une erreur est survenue lors de l'analyse audio.");
     } finally {
       setIsProcessing(false);
+      isUploadingRef.current = false; // ✅ Libérer le flag
     }
   };
 
@@ -90,6 +108,7 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
         <button 
           type="button" // Important pour ne pas soumettre le formulaire parent
           onClick={isRecording ? stopRecording : startRecording}
+          disabled={isProcessing}
           style={{
             backgroundColor: isRecording ? "#dc3545" : "#007bff",
             color: "white",

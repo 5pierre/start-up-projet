@@ -15,6 +15,9 @@ const {
 } = require('../core/annonce.services');
 
 router.post("/from-audio", upload.single("audio"), async (req, res) => {
+  console.log('🎤 Route appelée !'); // 👈 AJOUTE ICI
+  console.log('📦 Body:', req.body);
+  console.log('📁 Files:', req.files);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No audio file uploaded" });
