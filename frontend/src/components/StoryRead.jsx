@@ -72,7 +72,7 @@ export default function StoryRead() {
         )}
         {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center' }}>
-        
+
         <h1>Bienvenue sur Discute Potins</h1>
 
         {/* --- SECTION CONTACTS (TABLEAU) --- */}
@@ -139,31 +139,31 @@ export default function StoryRead() {
             <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Cliquez pour écrire à :</p>
             
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {/* Bouton vers User 1 */}
+                <button
+                    onClick={() => navigate('/messages/1')}
+                    className="login100-form-btn"
+                    style={{ width: 'auto', minWidth: '120px', backgroundColor: '#007bff' }}
+                >
+                    User 1
+                </button>
+
+                {/* Bouton vers User 2 */}
+                <button
+                    onClick={() => navigate('/messages/2')}
+                    className="login100-form-btn"
+                    style={{ width: 'auto', minWidth: '120px', backgroundColor: '#28a745' }}
+                >
+                    User 2
+                </button>
+
                 {/* Bouton vers User 3 */}
                 <button
                     onClick={() => navigate('/messages/3')}
                     className="login100-form-btn"
-                    style={{ width: 'auto', minWidth: '120px', backgroundColor: '#007bff' }}
-                >
-                    User 3
-                </button>
-
-                {/* Bouton vers User 4 */}
-                <button
-                    onClick={() => navigate('/messages/4')}
-                    className="login100-form-btn"
-                    style={{ width: 'auto', minWidth: '120px', backgroundColor: '#28a745' }}
-                >
-                    User 4
-                </button>
-
-                {/* Bouton vers User 5 */}
-                <button
-                    onClick={() => navigate('/messages/5')}
-                    className="login100-form-btn"
                     style={{ width: 'auto', minWidth: '120px', backgroundColor: '#dc3545' }}
                 >
-                    User 5
+                    User 3
                 </button>
             </div>
         </div>
