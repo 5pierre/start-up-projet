@@ -21,7 +21,7 @@ services:
   # 2. Backend Auth
   auth:
     # images: Nom de l'image pour Docker Hub pas utilisé pour le moment
-    build: ./BACKEND/auth-service
+    build: ./BackEnd/auth-service
     ports:
       - "4000:4000"
     depends_on:
@@ -33,7 +33,7 @@ services:
   # 3. Backend Message
   message:
     # images: Nom de l'image pour Docker Hub pa sutilisé pour le moment
-    build: ./BACKEND/message-service
+    build: ./BackEnd/message-service
     ports:
       - "5000:5000"
     depends_on:
@@ -53,7 +53,7 @@ services:
       - .env
   # 4. Backend Note
   note:
-    build: ./BACKEND/note-service
+    build: ./BackEnd/note-service
     ports:
       - "6100:6100"
     depends_on:
