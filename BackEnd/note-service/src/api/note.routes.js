@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-const { createNote, getRatingSummary, getCommentsForUser } = require('../data/notes');
+const { createNote, getRatingSummary, getCommentsForUser, getNoteByAuthorAndRated } = require('../data/notes');
 
 const router = express.Router();
 const Key = process.env.JWT_SECRET;
@@ -74,6 +74,27 @@ router.get('/users/:id/comments', async (req, res) => {
     }
     const comments = await getCommentsForUser(ratedUserId);
     return res.status(200).json({ comments });
+  } catch (err) {
+    return res.status(500).json({ error: 'Erreur interne', details: err.message });
+  }
+});
+
+router.get('/ratings/me/:ratedUserId', async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(403).send('Access denied');
+
+  try {
+    const decoded = verifyToken(token);
+    const authorUserId = decoded.id;
+    const ratedUserId = Number.parseInt(req.params.ratedUserId, 10);
+
+    if (!Number.isInteger(ratedUserId)) {
+      return res.status(400).json({ error: 'ID invalide' });
+    }
+
+    const note = await getNoteByAuthorAndRated(authorUserId, ratedUserId);
+    // Renvoie la note si elle existe, sinon null (ce n'est pas une erreur)
+    return res.status(200).json(note || null);
   } catch (err) {
     return res.status(500).json({ error: 'Erreur interne', details: err.message });
   }

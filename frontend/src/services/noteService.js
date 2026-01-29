@@ -10,6 +10,10 @@ export async function getUserComments(userId) {
   return axios.get(`${BASE_URL}/users/${userId}/comments`, { withCredentials: true });
 }
 
+export async function getMyRating(ratedUserId) {
+  return axios.get(`${BASE_URL}/ratings/me/${ratedUserId}`, { withCredentials: true });
+}
+
 // ratedUserId: number, stars: 1..5, comment?: string
 export async function rateUser({ ratedUserId, stars, comment }) {
   return axios.post(
