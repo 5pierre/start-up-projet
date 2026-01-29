@@ -11,6 +11,7 @@ import UserComments from './components/UserComments';
 import Messages from './components/Messages';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { getMe } from './services/authService';
+import Payment from "./components/Payment"; // AJOUT
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +56,7 @@ const App = () => {
         <Route path="/users/:id/comments" element={<UserComments />} />
         <Route path="/messages" element={<MessagingPage />} />
         <Route path="/messages/:id" element={<Messages />} />
+        <Route path="/pay" element={<Payment />} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>
     </Router>

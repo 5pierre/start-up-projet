@@ -7,7 +7,6 @@ import UserProfile from './UserProfile';
 import StoryCard from './StoryCard';
 import StoryWrite from './StoryWrite';
 import { getStories, deleteStory } from '../services/storyService';
-
 export default function StoryRead() {
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
@@ -22,7 +21,6 @@ export default function StoryRead() {
   useEffect(() => {
     fetchStories();
   }, []);
-
   const fetchStories = async () => {
     try {
       setLoading(true);
@@ -240,7 +238,24 @@ export default function StoryRead() {
               </button>
             )}
           </div>
-
+<div style={{ width: '100%', textAlign: 'center', marginBottom: '30px' }}>
+  <button
+    onClick={() => navigate('/pay')}
+    style={{ 
+        padding: '15px 30px', 
+        backgroundColor: '#28a745', // Vert bien visible
+        color: 'white', 
+        border: 'none', 
+        borderRadius: '8px',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+    }}
+  >
+    💳 Soutenir le site (5€)
+  </button>
+</div>
           {loading && (
             <p style={{ color: '#171710', marginTop: '20px' }}>Chargement des annonces...</p>
           )}

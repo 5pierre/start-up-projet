@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const annonceRoutes = require('./src/api/annonce.routes'); 
 const cookieParser = require('cookie-parser');
+const paymentRoutes = require('./src/api/payment.routes'); // AJOUT
 const helmet = require('helmet');
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
-
+app.use('/api', paymentRoutes); 
 app.set('trust proxy', 1); 
 
 app.use('/api', annonceRoutes);

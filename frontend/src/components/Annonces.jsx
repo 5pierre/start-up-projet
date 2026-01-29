@@ -113,6 +113,12 @@ export default function Annonces() {
             >
               Créer une annonce
             </button>
+            <button
+              onClick={() => navigate('/pay')}
+              style={{ marginTop: '10px', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}
+            >
+              💳 Soutenir le site (5€)
+            </button>
           </div>
         </div>
 
