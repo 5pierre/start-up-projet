@@ -62,7 +62,7 @@ export default function UserProfile({ onClose }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundColor: 'rgba(23, 23, 16, 0.7)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -73,29 +73,62 @@ export default function UserProfile({ onClose }) {
                 alignItems: 'flex-start',
                 padding: '40px',
                 width: '400px', 
-                position: 'relative' 
+                position: 'relative',
+                marginTop: 0
             }}>
                 <button 
                     onClick={onClose} 
                     style={{
                         position: 'absolute',
-                        top: '10px',
-                        right: '10px',
+                        top: '15px',
+                        right: '15px',
                         backgroundColor: 'transparent',
                         border: 'none',
-                        fontSize: '20px',
+                        fontSize: '28px',
                         cursor: 'pointer',
-                        color: '#999'
+                        color: '#666',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F0EEE8';
+                        e.currentTarget.style.color = '#171710';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#666';
                     }}
                 >
                     &times; 
                 </button>
 
-                <h2 style={{ color: '#333', marginBottom: '20px' }}>👤 Mon Profil</h2>
+                <h2 className="login100-form-title" style={{ marginBottom: '30px', fontSize: '24px' }}>
+                    Mon Profil
+                </h2>
 
-                {loading && <p>Chargement...</p>}
+                {loading && (
+                    <p style={{ color: '#171710', textAlign: 'center', padding: '20px' }}>
+                        Chargement...
+                    </p>
+                )}
 
-                {error && <p style={{ color: 'red', fontWeight: 'bold' }}>Erreur: {error}</p>}
+                {error && (
+                    <div style={{ 
+                        backgroundColor: '#fdeaea', 
+                        color: '#b91c1c', 
+                        padding: '12px 20px', 
+                        borderRadius: '8px', 
+                        marginBottom: '20px',
+                        border: '1px solid #f5a1a1'
+                    }}>
+                        Erreur: {error}
+                    </div>
+                )}
 
                 {profile && (
                     <div style={{ width: '100%', textAlign: 'center' }}>
@@ -104,11 +137,11 @@ export default function UserProfile({ onClose }) {
                                 src={profile.photo || '/default-avatar.png'}
                                 alt="Photo de profil"
                                 style={{
-                                width: '120px',
-                                height: '120px',
-                                borderRadius: '50%',
-                                objectFit: 'cover',
-                                border: '3px solid #4CAF50'
+                                    width: '120px',
+                                    height: '120px',
+                                    borderRadius: '50%',
+                                    objectFit: 'cover',
+                                    border: '3px solid #4CAF50'
                                 }}
                             />
                         </div>

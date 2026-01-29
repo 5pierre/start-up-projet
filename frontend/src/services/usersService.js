@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
+const BASE_URL = process.env.REACT_APP_API_AUTH_URL || 'http://localhost:4000';
 // On pointe vers /api/auth/users sans port 4000
 const API_URL =  `${BASE_URL}/users`;
 

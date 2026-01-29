@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
-import StoryRead from "./components/StoryRead";
-import RegisterPage from "./components/RegisterPage";
-import AdminPage from "./components/AdminPage";
-import MentionsLegales from "./components/MentionsLegales";
-import TestAnnonce from "./components/Annonces"; 
-import CreateAnnonce from "./components/CreateAnnonce";
-import UserComments from "./components/UserComments";
-import Messages from "./components/Messages";
-import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import StoryRead from './components/StoryRead';
+import RegisterPage from './components/RegisterPage';
+import AdminPage from './components/AdminPage';
+import MentionsLegales from './components/MentionsLegales';
+import MessagingPage from './components/MessagingPage';
+import TestAnnonce from './components/Annonces';
+import CreateAnnonce from './components/CreateAnnonce';
+import UserComments from './components/UserComments';
+import Messages from './components/Messages';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { getMe } from './services/authService';
-import "./App.css";
+import './App.css';
 
 const ProtectedRoute = ({ children }) => {
   const userRole = localStorage.getItem('userRole');
@@ -23,7 +25,6 @@ const App = () => {
 
   useEffect(() => {
       const syncSession = async () => {
-          // Si on pense être connecté (localStorage), on vérifie le cookie.
           if (!localStorage.getItem('userId')) return;
           try {
               const res = await getMe();
@@ -34,7 +35,6 @@ const App = () => {
                   localStorage.setItem('userRole', user.role || 'user');
               }
           } catch (error) {
-              // Cookie expiré/invalide => on nettoie sans appeler /logout
               localStorage.removeItem('userId');
               localStorage.removeItem('userName');
               localStorage.removeItem('userRole');
@@ -46,15 +46,16 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<StoryRead />} />
-        <Route path="/mentionsLegales" element={<MentionsLegales />}/>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/mentionsLegales" element={<MentionsLegales />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/messages/:id" element={<Messages />} />
-        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         <Route path="/annonces" element={<TestAnnonce />} />
+        <Route path="/story" element={<StoryRead />} />
         <Route path="/create" element={<CreateAnnonce />} />
         <Route path="/users/:id/comments" element={<UserComments />} />
-
+        <Route path="/messages" element={<MessagingPage />} />
+        <Route path="/messages/:id" element={<Messages />} />
+        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

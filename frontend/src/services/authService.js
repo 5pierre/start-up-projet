@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_AUTH_URL;
+const BASE_URL = process.env.REACT_APP_API_AUTH_URL || 'http://localhost:4000';
 
 export const checkAdminAccess = () => {
     const userRole = localStorage.getItem('userRole');
