@@ -46,6 +46,11 @@ services:
     build: ./BackEnd/annonce-service
     ports:
       - "3002:3002" 
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
   # 4. Backend Note
   note:
     build: ./BACKEND/note-service
