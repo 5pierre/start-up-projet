@@ -9,7 +9,8 @@ const {
   updateExistingAnnonce: updateExistingAnnonceData,
   deleteExistingAnnonce: deleteExistingAnnonceData,
   buildAnnonce,
-  createAnnonceData 
+  createAnnonceData,
+  validateAnnonce: validateAnnonceData
 } = require('../data/annonce');
 
 const Key = process.env.JWT_SECRET;
@@ -241,11 +242,44 @@ async function createAnnonce(req, res) {
   }
 }
 
+// Valider l'annonce (la marquer comme "prise") pour un utilisateur (prestataire)
+async function validateAnnonce(req, res) {
+  const token = req.cookies.token;
+  if (!token) return res.status(403).json({ error: "Access denied" });
+
+  try {
+    const decodedToken = verifyToken(token);
+    const ownerUserId = decodedToken.id;
+
+    const annonceId = Number.parseInt(req.params.id, 10);
+    if (!Number.isInteger(annonceId) || annonceId <= 0) {
+      return res.status(400).json({ error: "Invalid annonce ID" });
+    }
+
+    const updated = await validateAnnonceData(annonceId, ownerUserId);
+    if (!updated) {
+      return res.status(404).json({ error: "Annonce not found or permission denied" });
+    }
+
+    return res.status(200).json({
+      message: "Annonce validée",
+      annonce: updated
+    });
+  } catch (err) {
+    console.error(err);
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    return res.status(500).json({ error: "Internal error while validating annonce" });
+  }
+}
+
 module.exports = { 
   getAllAnnonces, 
   getSingleAnnonce,
   updateExistingAnnonce,
   deleteExistingAnnonce,
   generateAnnonceFromAudio,
-  createAnnonce
+  createAnnonce,
+  validateAnnonce
 };

@@ -196,9 +196,10 @@ export default function Annonces() {
           <div className="annonces-grid">
             {filtered.map((a) => {
               const isMyAnnonce = currentUserId === a.id_user;
+              const isTaken = !!a.is_valide;
               return(<article
                 key={a.id}
-                className="annonce-card card"
+                className={`annonce-card card ${isTaken ? 'annonce-card--taken' : ''}`}
               >
                 <div className="annonce-card-header">
                   <h2 className="annonce-card-title">{a.titre || 'Sans titre'}</h2>
@@ -224,9 +225,17 @@ export default function Annonces() {
                 {a.author_name && (
                   <p className="annonce-card-author">Par {a.author_name}</p>
                 )}
+                {isTaken && (
+                  <p className="annonce-card-author" style={{ marginTop: 8, fontWeight: 700 }}>
+                    ✅ Annonce prise
+                  </p>
+                )}
                 {!isMyAnnonce && currentUserId ? (
                       <button
-                        onClick={() => navigate(`/messages/${a.id_user}`)}
+                        onClick={() => {
+                          if (isTaken) return;
+                          navigate(`/messages/${a.id_user}?annonceId=${a.id}`);
+                        }}
                         className="login100-form-btn"
                         style={{ 
                           width: 'auto', 
@@ -239,8 +248,9 @@ export default function Annonces() {
                           borderRadius: '5px',
                           padding: '0 15px'
                         }}
+                        disabled={isTaken}
                       >
-                        Contacter le vendeur
+                        {isTaken ? 'Annonce déjà prise' : 'Contacter le vendeur'}
                       </button>) : (null)}
               </article>
               );

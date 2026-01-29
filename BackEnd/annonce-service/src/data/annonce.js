@@ -162,6 +162,24 @@ async function deleteExistingAnnonce(id, id_user) {
   }
 }
 
+// "Valider l'annonce" = l'annoncer comme prise => is_valide = TRUE
+async function validateAnnonce(annonceId, ownerUserId) {
+  try {
+    const result = await pool.query(
+      `UPDATE annonces
+       SET is_valide = TRUE
+       WHERE id = $1
+         AND id_user = $2
+       RETURNING *`,
+      [annonceId, ownerUserId]
+    );
+    return result.rows[0] || null;
+  } catch (err) {
+    console.error('Error validating annonce:', err);
+    throw err;
+  }
+}
+
 async function createAnnonceData (titre, description, prix, lieu, date, id_user) {
   try {
     const result = await pool.query(
@@ -183,5 +201,6 @@ module.exports = {
   updateExistingAnnonce,
   deleteExistingAnnonce,
   buildAnnonce,
-  createAnnonceData
+  createAnnonceData,
+  validateAnnonce
 };

@@ -11,7 +11,8 @@ const {
   updateExistingAnnonce,
   deleteExistingAnnonce,
   generateAnnonceFromAudio ,
-  createAnnonce
+  createAnnonce,
+  validateAnnonce
 } = require('../core/annonce.services');
 
 router.post("/from-audio", upload.single("audio"), async (req, res) => {
@@ -35,6 +36,7 @@ router.post("/from-audio", upload.single("audio"), async (req, res) => {
 router.post('/annonces', createAnnonce);
 router.get('/annonces', getAllAnnonces);           
 router.get('/annonces/:id', getSingleAnnonce);     
+router.post('/annonces/:id/validate', validateAnnonce);
 router.put('/annonces/:id', updateExistingAnnonce);    
 router.delete('/annonces/:id', deleteExistingAnnonce); 
 

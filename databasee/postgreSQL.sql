@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS messages (
     --     ON DELETE CASCADE 
 );
 
+-- Lier une discussion à une annonce (pour afficher "Valider l'annonce" dans le chat)
+ALTER TABLE IF EXISTS messages
+  ADD COLUMN IF NOT EXISTS annonce_id INT REFERENCES annonces(id) ON DELETE SET NULL;
+
 -- ------------------------------------------------
 -- DONNÉES PAR DÉFAUT POUR LES TESTS D'ANNONCES
 -- ------------------------------------------------

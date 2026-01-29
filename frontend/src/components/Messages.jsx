@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMessages } from '../services/messageService';
 import { initiateSocketConnection, getSocket } from '../services/socketService';
 import RateUserForm from './RateUserForm'; // Import du formulaire de notation
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import { getSingleAnnonce, validateAnnonce } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
 import './Messages.css';
 
@@ -13,6 +14,11 @@ export default function Messages() {
   const { id } = useParams();
   const user2Id = parseInt(id, 10);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const annonceIdRaw = searchParams.get('annonceId');
+  const annonceId = annonceIdRaw ? Number.parseInt(annonceIdRaw, 10) : null;
+  const [conversationAnnonceId, setConversationAnnonceId] = useState(null);
+  const effectiveAnnonceId = annonceId || conversationAnnonceId;
   
   // Récupération de l'ID connecté pour vérifier les permissions de notation
   const currentUserId = parseInt(localStorage.getItem('userId'), 10);
@@ -21,6 +27,8 @@ export default function Messages() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
+  const [annonce, setAnnonce] = useState(null);
+  const [annonceStatus, setAnnonceStatus] = useState(null); // message success/error
   
   // État pour le Popup de notation
   const [showRatePopup, setShowRatePopup] = useState(false);
@@ -33,7 +41,14 @@ export default function Messages() {
     try {
       setLoading(true);
       const data = await getMessages(user2Id);
-      setMessages(data.messages || []);
+      const msgs = data.messages || [];
+      setMessages(msgs);
+      if (!annonceId) {
+        const firstAnnonceId = msgs.find((m) => m.annonce_id)?.annonce_id || null;
+        if (firstAnnonceId && Number.isInteger(firstAnnonceId)) {
+          setConversationAnnonceId(firstAnnonceId);
+        }
+      }
       setError(null);
     } catch (err) {
       console.error('Erreur API:', err);
@@ -46,6 +61,21 @@ export default function Messages() {
   useEffect(() => {
     loadMessages();
   }, [user2Id]);
+
+  // Charger les infos de l'annonce si on est dans une discussion liée à une annonce
+  useEffect(() => {
+    const loadAnnonce = async () => {
+      if (!effectiveAnnonceId || Number.isNaN(effectiveAnnonceId) || effectiveAnnonceId <= 0) return;
+      try {
+        const res = await getSingleAnnonce(effectiveAnnonceId);
+        setAnnonce(res.annonce || null);
+      } catch (err) {
+        console.error("Erreur chargement annonce:", err);
+        setAnnonce(null);
+      }
+    };
+    loadAnnonce();
+  }, [effectiveAnnonceId]);
 
   // 2. Gestion WebSocket
   useEffect(() => {
@@ -79,6 +109,7 @@ export default function Messages() {
       socket.emit('send_message', {
         toUserId: user2Id,
         content: content.trim(),
+        annonceId: effectiveAnnonceId || undefined
       });
       setContent('');
     } else {
@@ -88,6 +119,29 @@ export default function Messages() {
 
   // Logique pour savoir si on peut noter (Connecté + Pas soi-même)
   const canRate = currentUserId && user2Id && currentUserId !== user2Id;
+
+  const canValidateAnnonce =
+    annonce &&
+    !annonce.is_valide &&
+    Number.isInteger(currentUserId) &&
+    currentUserId > 0 &&
+    currentUserId === annonce.id_user &&
+    Number.isInteger(user2Id) &&
+    user2Id > 0 &&
+    user2Id !== currentUserId;
+
+  const handleValidateAnnonce = async () => {
+    if (!annonce || !effectiveAnnonceId) return;
+    try {
+      setAnnonceStatus(null);
+      const res = await validateAnnonce(effectiveAnnonceId);
+      setAnnonce(res.annonce || null);
+      setAnnonceStatus({ type: 'success', text: "Annonce validée. Elle apparaîtra grisée dans la liste." });
+    } catch (err) {
+      const msg = err.response?.data?.error || "Erreur lors de la validation de l'annonce.";
+      setAnnonceStatus({ type: 'error', text: msg });
+    }
+  };
 
   // Essayer de trouver le nom de l'interlocuteur pour un affichage plus sympa
   const targetUserName =
@@ -117,6 +171,17 @@ export default function Messages() {
               Discussion avec {targetUserName}
             </h1>
 
+            {/* Bouton Valider l'annonce (visible seulement pour le destinataire: l'auteur de l'annonce) */}
+            {canValidateAnnonce && (
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={handleValidateAnnonce}
+              >
+                Valider l'annonce
+              </button>
+            )}
+
             {/* Bouton Noter */}
             {canRate && (
               <button
@@ -133,6 +198,22 @@ export default function Messages() {
           {error && (
             <div className="alert alert-error" style={{ marginBottom: '20px' }}>
               {error}
+            </div>
+          )}
+
+          {annonce && (
+            <div className="alert" style={{ marginBottom: '16px', background: '#f7f7f7' }}>
+              <strong>Annonce:</strong> {annonce.titre || `#${effectiveAnnonceId}`}{" "}
+              {annonce.is_valide ? "— ✅ déjà validée" : ""}
+            </div>
+          )}
+
+          {annonceStatus && (
+            <div
+              className={`alert ${annonceStatus.type === 'error' ? 'alert-error' : 'alert-success'}`}
+              style={{ marginBottom: '16px' }}
+            >
+              {annonceStatus.text}
             </div>
           )}
 

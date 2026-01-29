@@ -49,8 +49,9 @@ async function createNewMessage(req, res) {
 
     const decodedToken = verifyToken(token);
     const user1 = decodedToken.id; // utilisateur connecté
-    const { content, id_user_2 } = req.body;
+    const { content, id_user_2, annonceId } = req.body;
     const user2 = Number.parseInt(id_user_2);
+    const annonceIdParsed = annonceId ? Number.parseInt(annonceId) : null;
 
     if (!user2 || Number.isNaN(user2)) {
         return res.status(400).json({ error: "Destinataire (id_user_2) manquant ou invalide" });
@@ -67,7 +68,7 @@ async function createNewMessage(req, res) {
     if (content.length < 5) {
       return res.status(400).json({ error: "Message is too short (min 5 characters)" });
     }
-    const newMessage = await createMessage(user1, user2, content)
+    const newMessage = await createMessage(user1, user2, content, Number.isInteger(annonceIdParsed) ? annonceIdParsed : null)
 
 
       res.status(201).json({

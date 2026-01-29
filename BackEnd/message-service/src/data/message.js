@@ -18,7 +18,7 @@ const pool = new Pool({
 async function getMessages(user1, user2) {
   try {
     const result = await pool.query(
-    `SELECT m.id, m.contenu AS content, m.created_at, m.id_user_1, m.id_user_2, u.name AS sender_name
+    `SELECT m.id, m.contenu AS content, m.created_at, m.id_user_1, m.id_user_2, m.annonce_id, u.name AS sender_name
       FROM messages m
       JOIN users u ON m.id_user_1 = u.id_user
      WHERE 
@@ -34,13 +34,13 @@ async function getMessages(user1, user2) {
   }
 }
 
-async function createMessage(id_user_1, id_user_2, content) {
+async function createMessage(id_user_1, id_user_2, content, annonceId = null) {
   try {
     const result = await pool.query(
-      `INSERT INTO messages(id_user_1, id_user_2, contenu, created_at) 
-       VALUES($1, $2, $3, NOW()) 
-       RETURNING id, id_user_1, id_user_2, contenu, created_at`,
-      [id_user_1, id_user_2, content]
+      `INSERT INTO messages(id_user_1, id_user_2, annonce_id, contenu, created_at) 
+       VALUES($1, $2, $3, $4, NOW()) 
+       RETURNING id, id_user_1, id_user_2, annonce_id, contenu, created_at`,
+      [id_user_1, id_user_2, annonceId, content]
     );
     return result.rows[0];
   } catch (err) {

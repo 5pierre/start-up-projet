@@ -77,3 +77,17 @@ export const createAnnonceData = async (annonceData) => {
     throw error;
   }
 };
+
+export const validateAnnonce = async (annonceId, takenByUserId) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/${annonceId}/validate`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error validating annonce ${annonceId}:`, error);
+    throw error;
+  }
+};

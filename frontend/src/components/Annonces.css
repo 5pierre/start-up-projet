@@ -134,6 +134,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.annonce-card--taken {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.annonce-card--taken .login100-form-btn {
+  background-color: #999 !important;
+  cursor: not-allowed !important;
+}
+
 @media (min-width: 1024px) {
   .annonce-card:hover {
     transform: translateY(-2px);

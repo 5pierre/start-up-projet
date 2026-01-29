@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
 
   // Écouter un message entrant
   socket.on('send_message', async (data) => {
-    const { toUserId, content } = data;
+    const { toUserId, content, annonceId } = data;
     const fromUserId = socket.user.id;
 
     // Petite sécurité anti-vide
@@ -98,7 +98,13 @@ io.on('connection', (socket) => {
 
     try {
       // A. Sauvegarde en BDD
-      const savedMessage = await createMessage(fromUserId, toUserId, content);
+      const annonceIdParsed = annonceId ? Number.parseInt(annonceId, 10) : null;
+      const savedMessage = await createMessage(
+        fromUserId,
+        toUserId,
+        content,
+        Number.isInteger(annonceIdParsed) ? annonceIdParsed : null
+      );
       
       const messageToSend = {
         ...savedMessage,
