@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 import Footer from './Footer';
+import UserProfile from './UserProfile';
 import StarRating from './StarRating';
 import RateUserForm from './RateUserForm';
 import { getUserComments, getUserRatingSummary } from '../services/noteService';
 import { getUser } from '../services/usersService';
 import '../styles/RegisterStyle.css';
+import './UserComments.css';
 
 export default function UserComments() {
   const { id } = useParams();
@@ -19,6 +22,7 @@ export default function UserComments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRateForm, setShowRateForm] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     if (!Number.isInteger(userId) || userId <= 0) {
@@ -26,7 +30,6 @@ export default function UserComments() {
       setLoading(false);
       return;
     }
-
     const fetchAll = async () => {
       try {
         setLoading(true);
@@ -34,37 +37,29 @@ export default function UserComments() {
         const [sRes, cRes, userRes] = await Promise.all([
           getUserRatingSummary(userId),
           getUserComments(userId),
-          getUser(userId).catch(() => ({ data: { name: '' } })) // Optionnel: récupérer le nom
+          getUser(userId).catch(() => ({ data: { name: '' } })),
         ]);
-        setSummary({
-          average: sRes.data?.average ?? 0,
-          count: sRes.data?.count ?? 0
-        });
+        setSummary({ average: sRes.data?.average ?? 0, count: sRes.data?.count ?? 0 });
         setComments(cRes.data?.comments ?? []);
         setRatedUserName(userRes.data?.name || '');
       } catch (err) {
         console.error('Erreur chargement commentaires:', err);
-        setError("Impossible de charger les commentaires.");
+        setError('Impossible de charger les commentaires.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchAll();
   }, [userId]);
 
   const handleRateSuccess = () => {
-    // Rafraîchir les données après une note envoyée
     const fetchAll = async () => {
       try {
         const [sRes, cRes] = await Promise.all([
           getUserRatingSummary(userId),
-          getUserComments(userId)
+          getUserComments(userId),
         ]);
-        setSummary({
-          average: sRes.data?.average ?? 0,
-          count: sRes.data?.count ?? 0
-        });
+        setSummary({ average: sRes.data?.average ?? 0, count: sRes.data?.count ?? 0 });
         setComments(cRes.data?.comments ?? []);
       } catch (err) {
         console.error('Erreur rafraîchissement:', err);
@@ -76,72 +71,78 @@ export default function UserComments() {
   const canRate = Number.isInteger(currentUserId) && currentUserId > 0 && currentUserId !== userId;
 
   return (
-    <div className="container-login100" style={{ flexDirection: 'column' }}>
-      <div className="wrap-login100" style={{ flexDirection: 'column', width: '800px', maxWidth: '95vw' }}>
-        <button
-          onClick={() => navigate(-1)}
-          className="login100-form-btn-logout"
-          style={{ alignSelf: 'flex-start', marginBottom: '12px' }}
-        >
-          ← Retour
-        </button>
+  <>
+    <Navbar onProfileClick={() => setShowProfile(true)} />
+    {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
 
-        <h2 style={{ marginBottom: 10 }}>Commentaires</h2>
+    <div className="page-comments">
+      <div className="comments-wrap">
 
-        <div style={{ marginBottom: 18 }}>
+        {/* HEADER */}
+        <div className="comments-header">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => navigate(-1)}
+            style={{ marginBottom: 'var(--space-md)' }}
+          >
+            ← Retour
+          </button>
+          <h2 className="comments-title">Commentaires</h2>
+        </div>
+
+        {/* RÉSUMÉ NOTE MOYENNE ET NOMBRE D'AVIS */}
+        <div className="comments-summary" style={{ marginBottom: 18 }}>
           <StarRating value={Number(summary.average) || 0} readOnly size={20} />
           <span style={{ marginLeft: 10, color: '#555' }}>
             ({summary.count} avis)
           </span>
+
+          {/* BOUTON / FORMULAIRE DE NOTATION */}
+          {canRate && (
+            <div className="comments-rate-cta">
+              {!showRateForm ? (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ maxWidth: 320 }}
+                  onClick={() => setShowRateForm(true)}
+                >
+                  ✨ Noter cet utilisateur
+                </button>
+              ) : (
+                <RateUserForm
+                  ratedUserId={userId}
+                  ratedUserName={ratedUserName}
+                  onSuccess={handleRateSuccess}
+                  onClose={() => setShowRateForm(false)}
+                />
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Formulaire de notation - affiché seulement si connecté et pas soi-même */}
-        {canRate && (
-          <div style={{ marginBottom: 24 }}>
-            {!showRateForm ? (
-              <button
-                onClick={() => setShowRateForm(true)}
-                className="login100-form-btn"
-                style={{ width: '100%', maxWidth: 300 }}
-              >
-                ✨ Noter cet utilisateur
-              </button>
-            ) : (
-              <RateUserForm
-                ratedUserId={userId}
-                ratedUserName={ratedUserName}
-                onSuccess={handleRateSuccess}
-                onClose={() => setShowRateForm(false)}
-              />
-            )}
-          </div>
+        {/* ÉTAT CHARGEMENT / ERREUR */}
+        {loading && <div className="comments-loading">Chargement…</div>}
+        {error && <div className="comments-error alert alert-error">{error}</div>}
+
+        {/* LISTE DES COMMENTAIRES */}
+        {!loading && !error && comments.length === 0 && (
+          <p className="comments-empty">Aucun commentaire pour le moment.</p>
         )}
 
-        {loading && <p>Chargement...</p>}
-        {error && <p style={{ color: 'red', fontWeight: 'bold' }}>Erreur: {error}</p>}
-
-        {!loading && !error && comments.length === 0 && <p>Aucun commentaire pour le moment.</p>}
-
         {!loading && !error && comments.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="comments-list">
             {comments.map((c) => (
-              <div
-                key={c.id}
-                style={{
-                  border: '1px solid #eee',
-                  borderRadius: 10,
-                  padding: 14,
-                  background: '#fff'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <div key={c.id} className="comment-card card">
+                <div className="comment-card-header">
                   <strong>{c.author_name || `User #${c.author_user_id}`}</strong>
                   <StarRating value={c.stars} readOnly size={18} />
                 </div>
-                <div style={{ marginTop: 8, color: '#333' }}>
-                  {c.comment ? c.comment : <em>Pas de commentaire.</em>}
+                <div className="comment-card-body">
+                  {c.comment || <em>Pas de commentaire.</em>}
                 </div>
-                <div style={{ marginTop: 8, fontSize: 12, color: '#777' }}>
+                <div className="comment-card-date">
                   {c.created_at ? new Date(c.created_at).toLocaleString() : ''}
                 </div>
               </div>
@@ -149,8 +150,9 @@ export default function UserComments() {
           </div>
         )}
       </div>
-      <Footer />
     </div>
-  );
-}
 
+    <Footer />
+  </>
+);
+}

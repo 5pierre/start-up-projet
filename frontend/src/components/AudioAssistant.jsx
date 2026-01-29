@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { generateAnnonceFromAudio } from '../services/annonceService';
+import './AudioAssistant.css';
 
-const AudioAssistant = ({ onAnnonceGenerated }) => {
+export default function AudioAssistant({ onAnnonceGenerated }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const mediaRecorderRef = useRef(null);
@@ -11,8 +12,6 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // On essaie d'utiliser un format standard supporté par le navigateur
       let options = {};
       if (MediaRecorder.isTypeSupported('audio/webm')) {
         options = { mimeType: 'audio/webm' };
@@ -24,13 +23,12 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
       audioChunksRef.current = [];
       isUploadingRef.current = false;
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
 
       mediaRecorderRef.current.onstop = async () => {
+
         // Création du blob final
         if (isUploadingRef.current) {
           console.log('⚠️ Upload déjà en cours, abandon de ce déclenchement');
@@ -44,18 +42,23 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
         stream.getTracks().forEach(track => track.stop());
 
         await handleAudioUpload(audioBlob);
+
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        stream.getTracks().forEach((t) => t.stop());
+        await handleAudioUpload(blob);
+
       };
 
       mediaRecorderRef.current.start(1000);
       setIsRecording(true);
     } catch (err) {
-      console.error("Erreur d'accès au micro:", err);
-      alert("Impossible d'accéder au microphone. Vérifiez vos permissions.");
+      console.error('Accès micro:', err);
+      alert("Impossible d'accéder au microphone. Vérifiez les permissions.");
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
     }
@@ -72,6 +75,7 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
     try {
       console.log('📤 Envoi de l\'audio à l\'API...');
       const data = await generateAnnonceFromAudio(audioBlob);
+
       console.log('✅ Réponse reçue:', data);
       
       if (onAnnonceGenerated) {
@@ -80,6 +84,10 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
     } catch (error) {
       console.error('❌ Erreur:', error);
       alert("Une erreur est survenue lors de l'analyse audio.");
+
+      if (typeof onAnnonceGenerated === 'function') onAnnonceGenerated(data);
+    
+
     } finally {
       setIsProcessing(false);
       isUploadingRef.current = false; // ✅ Libérer le flag
@@ -87,27 +95,22 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
   };
 
   return (
-    <div style={{ 
-      margin: "20px 0", 
-      padding: "20px", 
-      border: "2px dashed #007bff", 
-      borderRadius: "10px", 
-      backgroundColor: "#f0f8ff",
-      textAlign: "center"
-    }}>
-      <h4 style={{ marginTop: 0 }}>🎙️ Assistant Vocal IA</h4>
-      <p style={{ fontSize: "0.9em", color: "#555" }}>
-        Décrivez votre tâche (ex: "Je cherche quelqu'un pour tondre ma pelouse à Lyon ce weekend pour 20 euros").
+    <div className="audio-assistant card">
+      <h3 className="audio-assistant-title">Assistant vocal IA</h3>
+      <p className="audio-assistant-desc">
+        Décrivez votre tâche à l’oral (ex. : « Je cherche quelqu’un pour tondre ma pelouse à Lyon ce week-end pour 20 euros »). L’IA remplira le formulaire.
       </p>
-
       {isProcessing ? (
-        <div style={{ color: "#007bff", fontWeight: "bold" }}>
-          ⏳ Analyse en cours, veuillez patienter...
+        <div className="audio-assistant-status">
+          <span className="audio-assistant-spinner" />
+          Analyse en cours…
         </div>
       ) : (
-        <button 
-          type="button" // Important pour ne pas soumettre le formulaire parent
+        <button
+          type="button"
+          className={`audio-assistant-btn ${isRecording ? 'audio-assistant-btn-stop' : ''}`}
           onClick={isRecording ? stopRecording : startRecording}
+
           disabled={isProcessing}
           style={{
             backgroundColor: isRecording ? "#dc3545" : "#007bff",
@@ -120,12 +123,11 @@ const AudioAssistant = ({ onAnnonceGenerated }) => {
             fontWeight: "bold",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
           }}
+
         >
-          {isRecording ? "⏹️ Arrêter l'enregistrement" : "🎤 Démarrer l'enregistrement"}
+          {isRecording ? "⏹ Arrêter l'enregistrement" : "🎤 Démarrer l'enregistrement"}
         </button>
       )}
     </div>
   );
-};
-
-export default AudioAssistant;
+}

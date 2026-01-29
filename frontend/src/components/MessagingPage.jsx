@@ -5,6 +5,7 @@ import Footer from './Footer';
 import UserProfile from './UserProfile';
 import { getConversations } from '../services/messageService';
 import '../styles/RegisterStyle.css';
+import './MessagingPage.css';
 
 export default function MessagingPage() {
   const navigate = useNavigate();
@@ -19,7 +20,6 @@ export default function MessagingPage() {
       setLoading(false);
       return;
     }
-
     const fetchConversations = async () => {
       try {
         setLoading(true);
@@ -33,7 +33,6 @@ export default function MessagingPage() {
         setLoading(false);
       }
     };
-
     fetchConversations();
   }, [isAuthenticated]);
 
@@ -41,17 +40,13 @@ export default function MessagingPage() {
     return (
       <>
         <Navbar />
-        <div className="container-login100">
-          <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center' }}>
-            <h1 className="login100-form-title">Espace messagerie</h1>
-            <p style={{ color: '#171710', marginBottom: '20px' }}>
-              Vous devez être connecté pour accéder à vos messages.
+        <div className="page-messaging">
+          <div className="messaging-wrap messaging-gate card">
+            <h1 className="messaging-title">Espace messagerie</h1>
+            <p className="messaging-gate-desc">
+              Connectez-vous pour accéder à vos messages.
             </p>
-            <button
-              className="login100-form-btn"
-              onClick={() => navigate('/register')}
-              style={{ width: 'auto', padding: '0 30px' }}
-            >
+            <button type="button" className="btn btn-primary" onClick={() => navigate('/register')}>
               Se connecter
             </button>
           </div>
@@ -65,117 +60,46 @@ export default function MessagingPage() {
     <>
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
-      <div className="container-login100">
-        <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center', width: '90%', maxWidth: '900px' }}>
-          <h1 className="login100-form-title">Mes conversations</h1>
-          
+      <div className="page-messaging">
+        <div className="messaging-wrap">
+          <h1 className="messaging-title">Mes conversations</h1>
+
           {loading && (
-            <p style={{ color: '#171710', marginTop: '20px' }}>Chargement de vos conversations...</p>
+            <div className="messaging-loading">
+              <p>Chargement…</p>
+            </div>
           )}
 
           {error && (
-            <div style={{ 
-              backgroundColor: '#fdeaea', 
-              color: '#b91c1c', 
-              padding: '12px 20px', 
-              borderRadius: '8px', 
-              marginTop: '20px',
-              border: '1px solid #f5a1a1'
-            }}>
-              {error}
+            <div className="messaging-error-wrap">
+              <div className="alert alert-error">{error}</div>
             </div>
           )}
 
           {!loading && !error && conversations.length === 0 && (
-            <div style={{ 
-              width: '100%', 
-              textAlign: 'center', 
-              padding: '40px 20px',
-              backgroundColor: '#F0EEE8',
-              borderRadius: '10px',
-              marginTop: '20px'
-            }}>
-              <p style={{ color: '#171710', fontSize: '16px', marginBottom: '20px' }}>
-                Vous n&apos;avez pas encore de conversations.
-              </p>
-              <p style={{ color: '#666', fontSize: '14px' }}>
-                Commencez une nouvelle discussion depuis votre profil ou en recherchant un utilisateur.
-              </p>
+            <div className="messaging-empty card">
+              <p>Vous n&apos;avez pas encore de conversations.</p>
+              <p>Commencez une discussion depuis votre profil ou en contactant un utilisateur.</p>
             </div>
           )}
 
           {!loading && !error && conversations.length > 0 && (
-            <div style={{ 
-              width: '100%', 
-              marginTop: '30px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px'
-            }}>
-              {conversations.map((conversation) => (
+            <div className="messaging-list">
+              {conversations.map((c) => (
                 <div
-                  key={conversation.id_user}
-                  onClick={() => navigate(`/messages/${conversation.id_user}`)}
-                  style={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #E2E2E2',
-                    borderRadius: '10px',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F9F7F2';
-                    e.currentTarget.style.borderColor = '#DEF2CA';
-                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#ffffff';
-                    e.currentTarget.style.borderColor = '#E2E2E2';
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                  }}
+                  key={c.id_user}
+                  className="messaging-item"
+                  onClick={() => navigate(`/messages/${c.id_user}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && navigate(`/messages/${c.id_user}`)}
                 >
-                  <div style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    backgroundColor: '#DEF2CA',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                    color: '#171710',
-                    flexShrink: 0
-                  }}>
-                    {conversation.name ? conversation.name.charAt(0).toUpperCase() : 'U'}
+                  <div className="messaging-avatar">
+                    {c.name ? c.name.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ 
-                      fontFamily: 'Montserrat-Bold, Poppins-Bold, sans-serif',
-                      color: '#171710',
-                      margin: 0,
-                      marginBottom: '4px',
-                      fontSize: '18px'
-                    }}>
-                      {conversation.name || `Utilisateur ${conversation.id_user}`}
-                    </h3>
-                    <p style={{ 
-                      color: '#666',
-                      margin: 0,
-                      fontSize: '14px'
-                    }}>
-                      Cliquez pour ouvrir la conversation
-                    </p>
-                  </div>
-                  <div style={{ 
-                    color: '#999',
-                    fontSize: '24px'
-                  }}>
+                  <div className="messaging-item-body">
+                    <h3>{c.name || `Utilisateur ${c.id_user}`}</h3>
+                    <p>Cliquez pour ouvrir la conversation</p>
                   </div>
                 </div>
               ))}
@@ -187,4 +111,3 @@ export default function MessagingPage() {
     </>
   );
 }
-

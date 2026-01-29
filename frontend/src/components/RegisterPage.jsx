@@ -344,13 +344,13 @@ export default function RegisterPage(){
             </div>
 
             {!isLoginMode && (
-              <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px', fontSize: '12px' }}>
+              <div className="password-criteria">
                 <strong>Critères du mot de passe :</strong>
-                <ul style={{ marginTop: '5px', marginBottom: '0', paddingLeft: '20px' }}>
-                  <li style={{ color: passwordCriteria.lengthValid ? '#4CAF50' : '#666' }}>
+                <ul>
+                  <li className={passwordCriteria.lengthValid ? 'valid' : 'invalid'}>
                     Minimum 12 caractères
                   </li>
-                  <li style={{ color: passwordCriteria.typesValid ? '#4CAF50' : '#666' }}>
+                  <li className={passwordCriteria.typesValid ? 'valid' : 'invalid'}>
                     Au moins 3 types : majuscules, minuscules, chiffres, spéciaux
                   </li>
                 </ul>
