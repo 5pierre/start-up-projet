@@ -4,212 +4,125 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
 import StoryCard from './StoryCard';
-import { getRecentStories } from '../services/storyService';
+import { getAllAnnonces } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
+import './HomePage.css';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem('userId');
   const [showProfile, setShowProfile] = useState(false);
-  const [recentStories, setRecentStories] = useState([]);
-  const [loadingStories, setLoadingStories] = useState(true);
+  const [recentAnnonces, setRecentAnnonces] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecentStories = async () => {
+    const fetch = async () => {
       try {
-        setLoadingStories(true);
-        const data = await getRecentStories(3);
-        // Gérer différents formats de réponse possibles
-        const storiesList = Array.isArray(data) ? data : (data.stories || data.data || []);
-        setRecentStories(storiesList);
+        setLoading(true);
+        const data = await getAllAnnonces();
+        const list = data.annonces || [];
+        setRecentAnnonces(list.slice(0, 3));
       } catch (err) {
-        // Ne pas afficher d'erreur si le backend n'est pas encore disponible
-        console.log('Backend non disponible ou aucune annonce:', err);
-        setRecentStories([]);
+        console.log('Annonces non disponibles:', err);
+        setRecentAnnonces([]);
       } finally {
-        setLoadingStories(false);
+        setLoading(false);
       }
     };
-
-    fetchRecentStories();
+    fetch();
   }, []);
 
   return (
     <>
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
-      <div className="container-login100">
-        <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <h1 className="login100-form-title" style={{ fontSize: '32px', marginBottom: '20px' }}>
-            Bienvenue sur les p&apos;tits vieux
-          </h1>
-          <p style={{ 
-            color: '#171710', 
-            fontSize: '18px', 
-            marginBottom: '30px',
-            lineHeight: '1.6',
-            maxWidth: '600px'
-          }}>
-            Plateforme de discussion et d&apos;échange entre utilisateurs.
-            Connectez-vous pour commencer à discuter avec d&apos;autres membres de la communauté.
+      <div className="page-home">
+        <div className="home-hero card">
+          <h1 className="home-title">Bienvenue sur les p&apos;tits vieux</h1>
+          <p className="home-subtitle">
+            Plateforme d&apos;entraide et d&apos;échange entre particuliers.
+            Connectez-vous pour discuter et consulter les annonces.
           </p>
-
           {!isAuthenticated && (
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div className="home-actions">
               <button
-                className="login100-form-btn"
+                type="button"
+                className="btn btn-primary"
                 onClick={() => navigate('/register')}
-                style={{ width: 'auto', padding: '0 40px' }}
               >
                 Se connecter / S&apos;inscrire
               </button>
             </div>
           )}
-
           {isAuthenticated && (
-            <div style={{ 
-              display: 'flex', 
-              gap: '16px', 
-              flexWrap: 'wrap', 
-              justifyContent: 'center',
-              marginTop: '20px'
-            }}>
+            <div className="home-actions">
               <button
-                className="login100-form-btn"
+                type="button"
+                className="btn btn-primary"
                 onClick={() => navigate('/messages')}
-                style={{ width: 'auto', padding: '0 40px' }}
               >
                 Voir mes conversations
               </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => navigate('/annonces')}
+              >
+                Voir les annonces
+              </button>
             </div>
           )}
+        </div>
 
-          {/* Section Annonces récentes */}
-          {!loadingStories && recentStories.length > 0 && (
-            <div style={{ 
-              marginTop: '50px',
-              width: '100%',
-              maxWidth: '900px'
-            }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                marginBottom: '20px'
-              }}>
-                <h2 style={{ 
-                  fontFamily: 'Montserrat-Bold, Poppins-Bold, sans-serif',
-                  color: '#171710',
-                  fontSize: '22px',
-                  margin: 0
-                }}>
-                  Annonces récentes
-                </h2>
-                <button
-                  onClick={() => navigate('/annonces')}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: 'transparent',
-                    color: '#171710',
-                    border: '1px solid #DEF2CA',
-                    borderRadius: '20px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontFamily: 'Poppins-Medium, sans-serif',
-                    transition: 'all 0.3s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#DEF2CA';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  Voir toutes →
-                </button>
-              </div>
-              <div style={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
-              }}>
-                {recentStories.map((story, index) => (
-                  <StoryCard
-                    key={story.id || story.story_id || story.id_story || `story-${index}`}
-                    story={story}
-                    onView={() => navigate('/annonces')}
-                    canEdit={false}
-                    canDelete={false}
-                  />
-                ))}
-              </div>
+        {!loading && recentAnnonces.length > 0 && (
+          <section className="home-section">
+            <div className="home-section-header">
+              <h2 className="home-section-title">Annonces récentes</h2>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => navigate('/annonces')}
+              >
+                Voir toutes →
+              </button>
             </div>
-          )}
+            <div className="home-cards">
+              {recentAnnonces.map((a, i) => (
+                <StoryCard
+                  key={a.id || `annonce-${i}`}
+                  story={a}
+                  onView={() => navigate('/annonces')}
+                  canEdit={false}
+                  canDelete={false}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-          <div style={{ 
-            marginTop: '50px',
-            padding: '30px',
-            backgroundColor: '#F0EEE8',
-            borderRadius: '10px',
-            width: '100%',
-            maxWidth: '700px'
-          }}>
-            <h2 style={{ 
-              fontFamily: 'Montserrat-Bold, Poppins-Bold, sans-serif',
-              color: '#171710',
-              fontSize: '22px',
-              marginBottom: '15px'
-            }}>
-              Fonctionnalités
-            </h2>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '20px',
-              textAlign: 'left'
-            }}>
-              <div>
-                <h3 style={{ 
-                  fontFamily: 'Montserrat-Bold, sans-serif',
-                  color: '#171710',
-                  fontSize: '16px',
-                  marginBottom: '8px'
-                }}>
-                  Messagerie
-                </h3>
-                <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.5' }}>
-                  Échangez des messages en temps réel avec d&apos;autres utilisateurs.
-                </p>
-              </div>
-              <div>
-                <h3 style={{ 
-                  fontFamily: 'Montserrat-Bold, sans-serif',
-                  color: '#171710',
-                  fontSize: '16px',
-                  marginBottom: '8px'
-                }}>
-                  Annonces
-                </h3>
-                <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.5' }}>
-                  Consultez et publiez des annonces pour la communauté.
-                </p>
-              </div>
-              <div>
-                <h3 style={{ 
-                  fontFamily: 'Montserrat-Bold, sans-serif',
-                  color: '#171710',
-                  fontSize: '16px',
-                  marginBottom: '8px'
-                }}>
-                  Communauté
-                </h3>
-                <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.5' }}>
-                  Rejoignez une communauté active et bienveillante.
-                </p>
-              </div>
+        <section className="home-features card">
+          <h2 className="home-features-title">Fonctionnalités</h2>
+          <div className="home-features-grid">
+            <div className="home-feature">
+              <h3 className="home-feature-title">Messagerie</h3>
+              <p className="home-feature-desc">
+                Échangez en temps réel avec d&apos;autres membres.
+              </p>
+            </div>
+            <div className="home-feature">
+              <h3 className="home-feature-title">Annonces</h3>
+              <p className="home-feature-desc">
+                Consultez et publiez des annonces (texte ou vocal).
+              </p>
+            </div>
+            <div className="home-feature">
+              <h3 className="home-feature-title">Communauté</h3>
+              <p className="home-feature-desc">
+                Rejoignez une communauté bienveillante et active.
+              </p>
             </div>
           </div>
-        </div>
+        </section>
       </div>
       <Footer />
     </>

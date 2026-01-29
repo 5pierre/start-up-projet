@@ -135,14 +135,8 @@ useEffect(() => {
                         }}>
                             Liste des utilisateurs ({users.length})
                         </h2>
-                        <div style={{ 
-                            overflowX: 'auto',
-                            backgroundColor: '#ffffff',
-                            borderRadius: '10px',
-                            border: '1px solid #E2E2E2',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                        }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <div className="admin-table-wrap">
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
                                 <thead>
                                     <tr style={{ backgroundColor: '#F0EEE8' }}>
                                         <th style={{ 

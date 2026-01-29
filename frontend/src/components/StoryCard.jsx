@@ -143,9 +143,9 @@ export default function StoryCard({ story, onView, onEdit, onDelete, canEdit, ca
         <span>
           {story.author_name || story.authorName || story.user_name || story.nom_auteur || story.auteur || 'Auteur inconnu'}
         </span>
-        {(story.created_at || story.createdAt || story.date_creation) && (
+        {(story.created_at || story.createdAt || story.date_creation || story.date_publication) && (
           <span>
-            {formatDate(story.created_at || story.createdAt || story.date_creation)}
+            {formatDate(story.created_at || story.createdAt || story.date_creation || story.date_publication)}
           </span>
         )}
       </div>

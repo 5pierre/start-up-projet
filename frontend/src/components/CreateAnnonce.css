@@ -1,0 +1,101 @@
+.page-create-annonce {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-md);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .page-create-annonce {
+    padding: var(--space-xl) var(--space-lg);
+    padding-bottom: 80px;
+  }
+}
+
+.create-annonce-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+@media (min-width: 1024px) {
+  .create-annonce-wrap { padding: var(--space-2xl); }
+}
+
+.create-annonce-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .create-annonce-title { font-size: var(--text-2xl); }
+}
+
+.create-annonce-subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .create-annonce-subtitle { font-size: var(--text-base); margin-bottom: var(--space-xl); }
+}
+
+.create-annonce-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.create-annonce-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.create-annonce-form .form-group label {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.create-annonce-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 600px) {
+  .create-annonce-form .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.create-annonce-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: stretch;
+  margin-top: var(--space-md);
+}
+
+.create-annonce-actions .btn {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
+  .create-annonce-actions {
+    justify-content: flex-end;
+  }
+  .create-annonce-actions .btn { flex: 0 1 auto; }
+}
+
+.create-annonce-form .input100 {
+  padding-left: 20px;
+}
