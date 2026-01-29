@@ -85,9 +85,6 @@ export default function AudioAssistant({ onAnnonceGenerated }) {
       console.error('❌ Erreur:', error);
       alert("Une erreur est survenue lors de l'analyse audio.");
 
-      if (typeof onAnnonceGenerated === 'function') onAnnonceGenerated(data);
-    
-
     } finally {
       setIsProcessing(false);
       isUploadingRef.current = false; // ✅ Libérer le flag
