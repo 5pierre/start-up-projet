@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import { getConversations } from '../services/messageService';
 import '../styles/RegisterStyle.css';
 import './MessagingPage.css';
@@ -41,6 +42,7 @@ export default function MessagingPage() {
       <>
         <Navbar />
         <div className="page-messaging">
+          <BackButton to="/" />
           <div className="messaging-wrap messaging-gate card">
             <h1 className="messaging-title">Espace messagerie</h1>
             <p className="messaging-gate-desc">
@@ -61,6 +63,7 @@ export default function MessagingPage() {
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="page-messaging">
+        <BackButton to="/" />
         <div className="messaging-wrap">
           <h1 className="messaging-title">Mes conversations</h1>
 

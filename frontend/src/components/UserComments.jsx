@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import StarRating from './StarRating';
 import RateUserForm from './RateUserForm';
 import { getUserComments, getUserRatingSummary } from '../services/noteService';
@@ -80,21 +81,14 @@ export default function UserComments() {
 
         {/* HEADER */}
         <div className="comments-header">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => navigate(-1)}
-            style={{ marginBottom: 'var(--space-md)' }}
-          >
-            ← Retour
-          </button>
+          <BackButton />
           <h2 className="comments-title">Commentaires</h2>
         </div>
 
         {/* RÉSUMÉ NOTE MOYENNE ET NOMBRE D'AVIS */}
-        <div className="comments-summary" style={{ marginBottom: 18 }}>
+        <div className="comments-summary">
           <StarRating value={Number(summary.average) || 0} readOnly size={20} />
-          <span style={{ marginLeft: 10, color: '#555' }}>
+          <span className="comments-summary-count">
             ({summary.count} avis)
           </span>
 
@@ -104,8 +98,7 @@ export default function UserComments() {
               {!showRateForm ? (
                 <button
                   type="button"
-                  className="btn btn-primary"
-                  style={{ maxWidth: 320 }}
+                  className="btn btn-primary comments-rate-btn"
                   onClick={() => setShowRateForm(true)}
                 >
                   ✨ Noter cet utilisateur

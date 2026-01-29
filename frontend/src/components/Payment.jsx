@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import BackButton from "./BackButton";
+import "../styles/RegisterStyle.css";
+import "./Payment.css";
 
-// Charge la clé publique
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 function CheckoutForm() {
   const stripe = useStripe();
@@ -18,44 +23,29 @@ function CheckoutForm() {
 
     setIsProcessing(true);
 
-    // Confirmer le paiement
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Redirection après succès (page d'accueil ou page de confirmation)
-        return_url: `${window.location.origin}/`, 
+        return_url: `${window.location.origin}/`,
       },
     });
 
-    // Si on arrive ici, c'est qu'il y a eu une erreur immédiate (ex: carte refusée)
     if (error) setMessage(error.message);
-    
+
     setIsProcessing(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-      {/* C'est ce composant magique qui crée le joli formulaire complet */}
+    <form onSubmit={handleSubmit} className="payment-form">
       <PaymentElement />
-      
-      <button 
-        disabled={isProcessing || !stripe || !elements} 
-        style={{
-          marginTop: "20px", 
-          width: "100%", 
-          padding: "12px", 
-          backgroundColor: "#28a745", 
-          color: "white", 
-          border: "none", 
-          borderRadius: "5px",
-          fontSize: "16px",
-          cursor: "pointer"
-        }}
+      <button
+        type="submit"
+        className="btn btn-primary payment-submit"
+        disabled={isProcessing || !stripe || !elements}
       >
-        {isProcessing ? "Traitement..." : "Payer 5.00 €"}
+        {isProcessing ? "Traitement…" : "Payer 5,00 €"}
       </button>
-      
-      {message && <div style={{ color: "red", marginTop: "10px" }}>{message}</div>}
+      {message && <div className="alert alert-error payment-message">{message}</div>}
     </form>
   );
 }
@@ -64,11 +54,10 @@ export default function Payment() {
   const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
-    // On crée l'intention de paiement dès le chargement de la page
-    fetch("http://localhost:3002/api/pay", { // Assurez-vous que le port est bon (5002 pour annonce-service)
+    fetch("http://localhost:3002/api/pay", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: 500 }), // 5€
+      body: JSON.stringify({ amount: 500 }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
@@ -76,20 +65,45 @@ export default function Payment() {
 
   const options = {
     clientSecret,
-    theme: 'stripe', // Thème automatique
+    theme: "stripe",
   };
 
+  if (!stripePromise) {
+    return (
+      <>
+        <Navbar />
+        <div className="page-payment">
+          <BackButton to="/" />
+          <div className="payment-wrap card">
+            <h1 className="payment-title">Paiement sécurisé</h1>
+            <div className="alert alert-error">
+              Clé Stripe manquante. Ajoutez <code>REACT_APP_STRIPE_PUBLIC_KEY</code> dans un fichier <code>.env</code> à la racine du dossier <code>frontend</code>, puis redémarrez l&apos;application.
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
   return (
-    <div style={{ maxWidth: "500px", margin: "50px auto", padding: "30px", boxShadow: "0 0 10px rgba(0,0,0,0.1)", borderRadius: "8px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Paiement Sécurisé</h2>
-      
-      {clientSecret ? (
-        <Elements options={options} stripe={stripePromise}>
-          <CheckoutForm />
-        </Elements>
-      ) : (
-        <p style={{ textAlign: "center" }}>Chargement du paiement...</p>
-      )}
-    </div>
+    <>
+      <Navbar />
+      <div className="page-payment">
+        <BackButton to="/" />
+        <div className="payment-wrap card">
+          <h1 className="payment-title">Paiement sécurisé</h1>
+          <p className="payment-desc">Soutenez le site avec un don de 5 €.</p>
+          {clientSecret ? (
+            <Elements options={options} stripe={stripePromise}>
+              <CheckoutForm />
+            </Elements>
+          ) : (
+            <p className="payment-loading">Chargement du formulaire de paiement…</p>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 }

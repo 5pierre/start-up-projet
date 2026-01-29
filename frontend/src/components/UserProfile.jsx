@@ -84,7 +84,7 @@ export default function UserProfile({ onClose }) {
                         <div className="profile-modal-avatar-wrap">
                             <img
                                 src={profile.photo || '/default-avatar.png'}
-                                alt="Photo de profil"
+                                alt="Avatar du profil"
                                 className="profile-modal-avatar"
                             />
                         </div>

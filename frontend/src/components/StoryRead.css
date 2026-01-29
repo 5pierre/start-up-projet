@@ -1,0 +1,117 @@
+.page-story-read {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--space-md);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+.page-story-read .back-btn {
+  margin-bottom: var(--space-lg);
+}
+
+@media (min-width: 1024px) {
+  .page-story-read {
+    padding: var(--space-xl) var(--space-lg);
+    padding-bottom: 80px;
+  }
+}
+
+.story-read-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.story-read-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.story-read-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  color: var(--color-text);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .story-read-title { font-size: var(--text-3xl); }
+}
+
+.story-read-donate-wrap {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.story-read-donate-btn {
+  padding: var(--space-md) var(--space-xl);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: filter 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.story-read-donate-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.story-read-loading {
+  color: var(--color-text);
+  margin-top: var(--space-lg);
+}
+
+.story-read-error {
+  width: 100%;
+  margin-top: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+  border: 1px solid var(--color-error-border);
+}
+
+.story-read-empty {
+  width: 100%;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-lg);
+}
+
+.story-read-empty-text {
+  color: var(--color-text);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-lg);
+}
+
+.story-read-list {
+  width: 100%;
+  margin-top: var(--space-lg);
+}
+
+.story-read-list .story-card {
+  margin-bottom: var(--space-md);
+}
+
+.story-read-create-btn {
+  width: auto;
+  padding: var(--space-md) var(--space-xl);
+}

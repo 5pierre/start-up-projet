@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/RegisterStyle.css';
+import './StoryRead.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import StoryCard from './StoryCard';
 import StoryWrite from './StoryWrite';
 import { getStories, deleteStory } from '../services/storyService';
@@ -224,73 +226,50 @@ export default function StoryRead() {
           onSuccess={handleWriteSuccess}
         />
       )}
-      <div className="container-login100">
-        <div className="wrap-login100" style={{ flexDirection: 'column', alignItems: 'center', width: '90%', maxWidth: '900px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '30px' }}>
-            <h1 className="login100-form-title" style={{ margin: 0 }}>Annonces</h1>
+      <div className="page-story-read">
+        <BackButton to="/" />
+        <div className="story-read-wrap">
+          <div className="story-read-top">
+            <h1 className="story-read-title">Annonces</h1>
             {isAuthenticated && (
               <button
-                className="login100-form-btn"
+                type="button"
+                className="btn btn-primary story-read-create-btn"
                 onClick={handleCreateClick}
-                style={{ width: 'auto', padding: '12px 24px' }}
               >
                 Créer une annonce
               </button>
             )}
           </div>
-<div style={{ width: '100%', textAlign: 'center', marginBottom: '30px' }}>
-  <button
-    onClick={() => navigate('/pay')}
-    style={{ 
-        padding: '15px 30px', 
-        backgroundColor: '#28a745', // Vert bien visible
-        color: 'white', 
-        border: 'none', 
-        borderRadius: '8px',
-        fontSize: '18px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-    }}
-  >
-    💳 Soutenir le site (5€)
-  </button>
-</div>
+          <div className="story-read-donate-wrap">
+            <button
+              type="button"
+              className="story-read-donate-btn"
+              onClick={() => navigate('/pay')}
+            >
+              💳 Soutenir le site (5€)
+            </button>
+          </div>
           {loading && (
-            <p style={{ color: '#171710', marginTop: '20px' }}>Chargement des annonces...</p>
+            <p className="story-read-loading">Chargement des annonces…</p>
           )}
 
           {error && (
-            <div style={{
-              backgroundColor: '#fdeaea',
-              color: '#b91c1c',
-              padding: '12px 20px',
-              borderRadius: '8px',
-              marginTop: '20px',
-              border: '1px solid #f5a1a1',
-              width: '100%'
-            }}>
+            <div className="story-read-error alert alert-error">
               {error}
             </div>
           )}
 
           {!loading && !error && stories.length === 0 && (
-            <div style={{
-              width: '100%',
-              textAlign: 'center',
-              padding: '40px 20px',
-              backgroundColor: '#F0EEE8',
-              borderRadius: '10px',
-              marginTop: '20px'
-            }}>
-              <p style={{ color: '#171710', fontSize: '16px', marginBottom: '20px' }}>
+            <div className="story-read-empty card">
+              <p className="story-read-empty-text">
                 Aucune annonce disponible pour le moment.
               </p>
               {isAuthenticated && (
                 <button
-                  className="login100-form-btn"
+                  type="button"
+                  className="btn btn-primary story-read-create-btn"
                   onClick={handleCreateClick}
-                  style={{ width: 'auto', padding: '12px 24px' }}
                 >
                   Créer la première annonce
                 </button>
@@ -299,7 +278,7 @@ export default function StoryRead() {
           )}
 
           {!loading && !error && stories.length > 0 && (
-            <div style={{ width: '100%', marginTop: '20px' }}>
+            <div className="story-read-list">
               {stories.map((story, index) => (
                 <StoryCard
                   key={story.id || story.story_id || story.id_story || `story-${index}`}

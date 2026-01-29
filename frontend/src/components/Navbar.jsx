@@ -49,9 +49,9 @@ export default function Navbar({ onSearchChange, onProfileClick }) {
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && navigate('/')}
+          aria-label="Accueil"
         >
           <img src={logo} alt="Logo" className="navbar-logo-img" />
-          <span className="navbar-logo-text">Les p&apos;tits vieux</span>
         </div>
 
         <nav className="navbar-links">

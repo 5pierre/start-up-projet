@@ -107,20 +107,7 @@ export default function AudioAssistant({ onAnnonceGenerated }) {
           type="button"
           className={`audio-assistant-btn ${isRecording ? 'audio-assistant-btn-stop' : ''}`}
           onClick={isRecording ? stopRecording : startRecording}
-
           disabled={isProcessing}
-          style={{
-            backgroundColor: isRecording ? "#dc3545" : "#007bff",
-            color: "white",
-            padding: "12px 24px",
-            border: "none",
-            borderRadius: "30px",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
-          }}
-
         >
           {isRecording ? "⏹ Arrêter l'enregistrement" : "🎤 Démarrer l'enregistrement"}
         </button>

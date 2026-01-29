@@ -37,89 +37,98 @@ export default function HomePage() {
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="page-home">
-        <div className="home-hero card">
-          <h1 className="home-title">Bienvenue sur les p&apos;tits vieux</h1>
-          <p className="home-subtitle">
-            Plateforme d&apos;entraide et d&apos;échange entre particuliers.
-            Connectez-vous pour discuter et consulter les annonces.
-          </p>
-          {!isAuthenticated && (
-            <div className="home-actions">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => navigate('/register')}
-              >
-                Se connecter / S&apos;inscrire
-              </button>
-            </div>
-          )}
-          {isAuthenticated && (
-            <div className="home-actions">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => navigate('/messages')}
-              >
-                Voir mes conversations
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => navigate('/annonces')}
-              >
-                Voir les annonces
-              </button>
-            </div>
-          )}
-        </div>
+        <header className="home-hero">
+          <div className="home-hero-inner">
+            <p className="home-hero-badge">Plateforme d&apos;entraide</p>
+            <h1 className="home-title">
+              Bienvenue sur les p&apos;tits vieux
+            </h1>
+            <p className="home-subtitle">
+              Échangez, publiez des annonces et discutez avec une communauté
+              bienveillante. Tout se fait simplement, en texte ou à la voix.
+            </p>
+            {!isAuthenticated && (
+              <div className="home-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary home-cta-primary"
+                  onClick={() => navigate('/register')}
+                >
+                  Créer un compte / Se connecter
+                </button>
+              </div>
+            )}
+            {isAuthenticated && (
+              <div className="home-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary home-cta-primary"
+                  onClick={() => navigate('/annonces')}
+                >
+                  Voir les annonces
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => navigate('/messages')}
+                >
+                  Mes conversations
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
 
         {!loading && recentAnnonces.length > 0 && (
-          <section className="home-section">
-            <div className="home-section-header">
-              <h2 className="home-section-title">Annonces récentes</h2>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => navigate('/annonces')}
-              >
-                Voir toutes →
-              </button>
-            </div>
-            <div className="home-cards">
-              {recentAnnonces.map((a, i) => (
-                <StoryCard
-                  key={a.id || `annonce-${i}`}
-                  story={a}
-                  onView={() => navigate('/annonces')}
-                  canEdit={false}
-                  canDelete={false}
-                />
-              ))}
+          <section className="home-section home-section-annonces">
+            <div className="home-section-inner">
+              <div className="home-section-header">
+                <h2 className="home-section-title">Annonces récentes</h2>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => navigate('/annonces')}
+                >
+                  Voir toutes →
+                </button>
+              </div>
+              <div className="home-cards">
+                {recentAnnonces.map((a, i) => (
+                  <StoryCard
+                    key={a.id || `annonce-${i}`}
+                    story={a}
+                    onView={() => navigate('/annonces')}
+                    canEdit={false}
+                    canDelete={false}
+                  />
+                ))}
+              </div>
             </div>
           </section>
         )}
 
-        <section className="home-features card">
-          <h2 className="home-features-title">Fonctionnalités</h2>
-          <div className="home-features-grid">
-            <div className="home-feature">
-              <h3 className="home-feature-title">Messagerie</h3>
-              <p className="home-feature-desc">
-                Échangez en temps réel avec d&apos;autres membres.
-              </p>
-            </div>
-            <div className="home-feature">
-              <h3 className="home-feature-title">Annonces</h3>
-              <p className="home-feature-desc">
-                Consultez et publiez des annonces (texte ou vocal).
-              </p>
-            </div>
-            <div className="home-feature">
-              <h3 className="home-feature-title">Communauté</h3>
-              <p className="home-feature-desc">
-                Rejoignez une communauté bienveillante et active.
-              </p>
+        <section className="home-section home-section-features">
+          <div className="home-section-inner">
+            <h2 className="home-features-title">Ce que vous pouvez faire</h2>
+            <div className="home-features-grid">
+              <article className="home-feature-card">
+                <h3 className="home-feature-title">Messagerie</h3>
+                <p className="home-feature-desc">
+                  Échangez en temps réel avec d&apos;autres membres, en toute simplicité.
+                </p>
+              </article>
+              <article className="home-feature-card">
+                <h3 className="home-feature-title">Annonces</h3>
+                <p className="home-feature-desc">
+                  Consultez et publiez des annonces, en texte ou à la voix.
+                </p>
+              </article>
+              <article className="home-feature-card">
+                <h3 className="home-feature-title">Communauté</h3>
+                <p className="home-feature-desc">
+                  Rejoignez une communauté bienveillante et active.
+                </p>
+              </article>
             </div>
           </div>
         </section>

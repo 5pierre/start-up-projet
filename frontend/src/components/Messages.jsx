@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMessages } from '../services/messageService';
 import { initiateSocketConnection, getSocket } from '../services/socketService';
-import RateUserForm from './RateUserForm'; // Import du formulaire de notation
+import RateUserForm from './RateUserForm';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import { getSingleAnnonce, validateAnnonce } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
 import './Messages.css';
@@ -36,7 +37,7 @@ export default function Messages() {
   // 1. Charger l'historique (via API REST)
   const messagesEndRef = useRef(null);
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     if (!user2Id) return;
     try {
       setLoading(true);
@@ -56,11 +57,11 @@ export default function Messages() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user2Id, annonceId]);
 
   useEffect(() => {
     loadMessages();
-  }, [user2Id]);
+  }, [loadMessages]);
 
   // Charger les infos de l'annonce si on est dans une discussion liée à une annonce
   useEffect(() => {
@@ -159,13 +160,7 @@ export default function Messages() {
 
           {/* HEADER */}
           <div className="messages-header">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/')}
-            >
-              ← Retour
-            </button>
+            <BackButton to="/messages" />
 
             <h1 className="messages-title">
               Discussion avec {targetUserName}
@@ -196,23 +191,20 @@ export default function Messages() {
 
           {/* Affichage des erreurs */}
           {error && (
-            <div className="alert alert-error" style={{ marginBottom: '20px' }}>
+            <div className="alert alert-error messages-alert">
               {error}
             </div>
           )}
 
           {annonce && (
-            <div className="alert" style={{ marginBottom: '16px', background: '#f7f7f7' }}>
-              <strong>Annonce:</strong> {annonce.titre || `#${effectiveAnnonceId}`}{" "}
+            <div className="alert messages-annonce-alert">
+              <strong>Annonce :</strong> {annonce.titre || `#${effectiveAnnonceId}`}{" "}
               {annonce.is_valide ? "— ✅ déjà validée" : ""}
             </div>
           )}
 
           {annonceStatus && (
-            <div
-              className={`alert ${annonceStatus.type === 'error' ? 'alert-error' : 'alert-success'}`}
-              style={{ marginBottom: '16px' }}
-            >
+            <div className={`alert ${annonceStatus.type === 'error' ? 'alert-error' : 'alert-success'} messages-alert`}>
               {annonceStatus.text}
             </div>
           )}

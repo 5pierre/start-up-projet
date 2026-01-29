@@ -22,6 +22,10 @@
   margin-bottom: var(--space-md);
 }
 
+.comments-header .back-btn {
+  margin-bottom: var(--space-md);
+}
+
 @media (min-width: 1024px) {
   .comments-header { margin-bottom: var(--space-lg); }
 }
@@ -48,9 +52,15 @@
   .comments-summary { margin-bottom: var(--space-lg); }
 }
 
-.comments-summary .comments-count {
+.comments-summary .comments-count,
+.comments-summary-count {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  margin-left: var(--space-sm);
+}
+
+.comments-rate-btn {
+  max-width: 320px;
 }
 
 .comments-rate-cta {

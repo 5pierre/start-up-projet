@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import AudioAssistant from './AudioAssistant';
 import { createAnnonceData } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
 import './CreateAnnonce.css';
 
-// --- AJOUT STRIPE ---
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-// Remplacez par votre clé publique (la même que dans le .env)
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 // --- COMPOSANT FORMULAIRE DE PAIEMENT ---
 const PaymentForm = ({ commissionAmount, onSuccess, onCancel }) => {
@@ -45,18 +45,15 @@ const PaymentForm = ({ commissionAmount, onSuccess, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="create-annonce-form" style={{textAlign: 'center'}}>
-      <h3 style={{marginBottom: '20px', color: '#28a745'}}>Paiement de la commission</h3>
-      <p style={{marginBottom: '20px'}}>
+    <form onSubmit={handleSubmit} className="create-annonce-form create-annonce-payment-form">
+      <h3 className="create-annonce-payment-title">Paiement de la commission</h3>
+      <p className="create-annonce-payment-desc">
         Pour valider votre annonce, veuillez régler les frais de service de <strong>{(commissionAmount / 100).toFixed(2)} €</strong>.
       </p>
-      
-      <div style={{marginBottom: '20px', textAlign: 'left'}}>
+      <div className="create-annonce-payment-element">
         <PaymentElement />
       </div>
-
       {msg && <div className="alert alert-error">{msg}</div>}
-
       <div className="create-annonce-actions">
         <button type="button" className="btn btn-secondary" onClick={onCancel}>
           Retour
@@ -173,6 +170,7 @@ export default function CreateAnnonce() {
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="page-create-annonce">
+        <BackButton to="/annonces" />
         <div className="create-annonce-wrap card">
           <h1 className="create-annonce-title">Créer une annonce</h1>
           <p className="create-annonce-subtitle">
@@ -287,7 +285,11 @@ export default function CreateAnnonce() {
             </form>
           ) : (
             /* MODE PAIEMENT */
-            clientSecret && (
+            !stripePromise ? (
+              <div className="alert alert-error">
+                Clé Stripe manquante. Ajoutez <code>REACT_APP_STRIPE_PUBLIC_KEY</code> dans un fichier <code>.env</code> du dossier frontend, puis redémarrez.
+              </div>
+            ) : clientSecret ? (
               <Elements stripe={stripePromise} options={{ clientSecret, theme: 'stripe' }}>
                 <PaymentForm 
                   commissionAmount={commissionAmount}
@@ -295,6 +297,8 @@ export default function CreateAnnonce() {
                   onCancel={() => setShowPayment(false)}
                 />
               </Elements>
+            ) : (
+              <p className="create-annonce-loading">Chargement du paiement…</p>
             )
           )}
         </div>

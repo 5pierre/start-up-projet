@@ -5,6 +5,7 @@ import '../styles/RegisterStyle.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -232,6 +233,7 @@ export default function RegisterPage(){
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="limiter">
         <div className="container-login100">
+          <BackButton to="/" />
           <div className="wrap-login100">
           <form className="login100-form validate-form" onSubmit={handleSubmit}>
             <span className="login100-form-title">
@@ -252,9 +254,7 @@ export default function RegisterPage(){
                   />
                   <span className="focus-input100"></span>
                   {errors.name && (
-                    <span className="error-message" style={{ color: '#ff4444', fontSize: '12px', marginTop: '5px', display: 'block' }}>
-                      {errors.name}
-                    </span>
+                    <span className="error-message">{errors.name}</span>
                   )}
                 </div>
 
@@ -381,7 +381,7 @@ export default function RegisterPage(){
                       id="termsAccepted"
                       required 
                     />
-                    <label htmlFor="termsAccepted" className="txt1" style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                    <label htmlFor="termsAccepted" className="txt1 register-terms-label">
                         J'accepte que mes données soient utilisées pour la création et la gestion de mon compte, la publication de mes histoires et l'accès aux fonctionnalités de lecture du site.
                     </label>
                 </span>

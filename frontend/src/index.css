@@ -198,6 +198,32 @@ textarea::placeholder {
   background: var(--color-primary-light);
 }
 
+.btn-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+.btn-success:hover:not(:disabled) {
+  background: var(--color-success-border);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-donate {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+.btn-donate:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: var(--text-sm);
+  min-height: 36px;
+}
+
 .alert {
   padding: 12px 16px;
   border-radius: var(--radius-md);

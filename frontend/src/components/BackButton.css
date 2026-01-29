@@ -1,0 +1,35 @@
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: var(--touch-min);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: var(--space-md);
+}
+
+.back-btn:hover {
+  color: var(--color-primary);
+  background: var(--color-bg-alt);
+  border-color: var(--color-border-focus);
+}
+
+.back-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.page-header .back-btn {
+  margin-bottom: 0;
+  margin-right: var(--space-md);
+}

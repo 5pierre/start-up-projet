@@ -3,6 +3,7 @@ import '../styles/RegisterStyle.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 
 export default function MentionsLegales() {
   const [showProfile, setShowProfile] = useState(false);
@@ -12,6 +13,7 @@ export default function MentionsLegales() {
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="page-ml">
+        <BackButton to="/" />
         <div className="wrap-login100 card">
           <h1 className="login100-form-title">Mentions légales</h1>
           <div className="legal-content">

@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
+import BackButton from './BackButton';
 import '../styles/RegisterStyle.css';
 import './Annonces.css';
-import { getAllAnnonces, getSingleAnnonce, updateExistingAnnonce, deleteExistingAnnonce } from '../services/annonceService';
+import { getAllAnnonces } from '../services/annonceService';
 
 export default function Annonces() {
   const navigate = useNavigate();
@@ -13,9 +14,6 @@ export default function Annonces() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const currentUserId = parseInt(localStorage.getItem('userId'), 10);
-  const [testId, setTestId] = useState('');
-  const [updateTitre, setUpdateTitre] = useState('');
-  const [rawResponse, setRawResponse] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -48,39 +46,20 @@ export default function Annonces() {
 
   if (error) {
     return (
-      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-        <h1>Liste des annonces</h1>
-        <p style={{ color: "red" }}>{error}</p>
-      </div>
+      <>
+        <Navbar onProfileClick={() => setShowProfile(true)} />
+        {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+      <div className="page-annonces">
+        <BackButton to="/" />
+        <div className="annonces-header">
+          <h1 className="annonces-title">Liste des annonces</h1>
+          <div className="alert alert-error">{error}</div>
+        </div>
+        </div>
+        <Footer />
+      </>
     );
   }
-
-  const handleGetById = async () => {
-    try {
-      const res = await getSingleAnnonce(testId);
-      setRawResponse(res);
-    } catch (e) {
-      setRawResponse({ error: e.message });
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const res = await updateExistingAnnonce(testId, { titre: updateTitre });
-      setRawResponse(res);
-    } catch (e) {
-      setRawResponse({ error: e.message });
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      const res = await deleteExistingAnnonce(testId);
-      setRawResponse(res);
-    } catch (e) {
-      setRawResponse({ error: e.message });
-    }
-  };
 
   const formatDate = (d) => {
     if (!d) return '';
@@ -93,6 +72,7 @@ export default function Annonces() {
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <div className="page-annonces">
+        <BackButton to="/" />
         <div className="annonces-header">
           <h1 className="annonces-title">Annonces</h1>
           <p className="annonces-subtitle">
@@ -114,8 +94,9 @@ export default function Annonces() {
               Créer une annonce
             </button>
             <button
+              type="button"
+              className="btn btn-donate"
               onClick={() => navigate('/pay')}
-              style={{ marginTop: '10px', padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}
             >
               💳 Soutenir le site (5€)
             </button>
@@ -238,21 +219,11 @@ export default function Annonces() {
                 )}
                 {!isMyAnnonce && currentUserId ? (
                       <button
+                        type="button"
+                        className="btn btn-donate annonce-contact-btn"
                         onClick={() => {
                           if (isTaken) return;
                           navigate(`/messages/${a.id_user}?annonceId=${a.id}`);
-                        }}
-                        className="login100-form-btn"
-                        style={{ 
-                          width: 'auto', 
-                          minWidth: '120px', 
-                          backgroundColor: '#28a745', 
-                          height: '40px', 
-                          cursor: 'pointer',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '5px',
-                          padding: '0 15px'
                         }}
                         disabled={isTaken}
                       >
