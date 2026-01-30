@@ -148,6 +148,16 @@
   cursor: not-allowed;
 }
 
+.annonce-contact-btn {
+  background: #4a90e2;
+  color: var(--color-surface);
+}
+
+.annonce-contact-btn:hover:not(:disabled) {
+  background: #357abd;
+  box-shadow: var(--shadow-sm);
+}
+
 .annonces-actions .btn-donate {
   margin-top: 0;
 }
@@ -219,4 +229,49 @@
 
 @media (min-width: 600px) {
   .annonces-actions .btn { width: auto; }
+}
+
+/* Styles pour les boutons modifier/supprimer dans les cartes d'annonces */
+.annonce-card .story-card-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-left: var(--space-md);
+  flex-shrink: 0;
+}
+
+.annonce-card .story-card-btn-edit {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary-light);
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.annonce-card .story-card-btn-edit:hover {
+  background: var(--color-primary-hover);
+}
+
+.annonce-card .story-card-btn-delete {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.annonce-card .story-card-btn-delete:hover {
+  background: var(--color-error-border);
+  color: var(--color-surface);
 }

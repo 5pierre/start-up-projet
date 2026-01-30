@@ -241,15 +241,17 @@ export default function StoryRead() {
               </button>
             )}
           </div>
-          <div className="story-read-donate-wrap">
-            <button
-              type="button"
-              className="story-read-donate-btn"
-              onClick={() => navigate('/pay')}
-            >
-              💳 Soutenir le site (5€)
-            </button>
-          </div>
+          {isAuthenticated && (
+            <div className="story-read-donate-wrap">
+              <button
+                type="button"
+                className="story-read-donate-btn"
+                onClick={() => navigate('/pay')}
+              >
+                💳 Soutenir le site (5€)
+              </button>
+            </div>
+          )}
           {loading && (
             <p className="story-read-loading">Chargement des annonces…</p>
           )}

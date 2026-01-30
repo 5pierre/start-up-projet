@@ -199,22 +199,22 @@ textarea::placeholder {
 }
 
 .btn-success {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
-  border: 1px solid var(--color-success-border);
+  background: #28a745;
+  color: var(--color-surface);
+  border: 1px solid #28a745;
 }
 .btn-success:hover:not(:disabled) {
-  background: var(--color-success-border);
-  color: var(--color-text);
+  background: #218838;
+  color: var(--color-surface);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-donate {
-  background: var(--color-primary);
+  background: #4a90e2;
   color: var(--color-surface);
 }
 .btn-donate:hover:not(:disabled) {
-  filter: brightness(1.05);
+  background: #357abd;
   box-shadow: var(--shadow-sm);
 }
 

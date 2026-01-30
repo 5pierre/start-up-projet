@@ -6,7 +6,8 @@ import UserProfile from './UserProfile';
 import BackButton from './BackButton';
 import '../styles/RegisterStyle.css';
 import './Annonces.css';
-import { getAllAnnonces } from '../services/annonceService';
+import { getAllAnnonces, deleteExistingAnnonce, updateExistingAnnonce } from '../services/annonceService';
+import StoryWrite from './StoryWrite';
 
 export default function Annonces() {
   const navigate = useNavigate();
@@ -14,8 +15,13 @@ export default function Annonces() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const currentUserId = parseInt(localStorage.getItem('userId'), 10);
+  const userRole = localStorage.getItem('userRole');
+  const isAdmin = userRole === 'admin';
+  const isAuthenticated = !!localStorage.getItem('userId');
   const [showProfile, setShowProfile] = useState(false);
   const [search, setSearch] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingAnnonce, setEditingAnnonce] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,10 +73,58 @@ export default function Annonces() {
     return dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
+  const canEditAnnonce = (annonce) => {
+    if (!currentUserId) return false;
+    return isAdmin || currentUserId === annonce.id_user;
+  };
+
+  const canDeleteAnnonce = (annonce) => {
+    if (!currentUserId) return false;
+    return isAdmin || currentUserId === annonce.id_user;
+  };
+
+  const handleEdit = (annonce) => {
+    setEditingAnnonce(annonce);
+    setShowEditModal(true);
+  };
+
+  const handleDelete = async (annonceId) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+      return;
+    }
+    try {
+      await deleteExistingAnnonce(annonceId);
+      // Recharger la liste
+      const data = await getAllAnnonces();
+      setAnnonces(data.annonces || []);
+    } catch (err) {
+      console.error('Erreur suppression annonce:', err);
+      alert(err.response?.data?.error || 'Erreur lors de la suppression de l\'annonce.');
+    }
+  };
+
+  const handleEditSuccess = async () => {
+    setShowEditModal(false);
+    setEditingAnnonce(null);
+    // Recharger la liste
+    const data = await getAllAnnonces();
+    setAnnonces(data.annonces || []);
+  };
+
   return (
     <>
       <Navbar onProfileClick={() => setShowProfile(true)} />
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
+      {showEditModal && editingAnnonce && (
+        <StoryWrite
+          story={editingAnnonce}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingAnnonce(null);
+          }}
+          onSuccess={handleEditSuccess}
+        />
+      )}
       <div className="page-annonces">
         <BackButton to="/" />
         <div className="annonces-header">
@@ -86,20 +140,24 @@ export default function Annonces() {
               onChange={(e) => setSearch(e.target.value)}
               className="annonces-search"
             />
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => navigate('/create')}
-            >
-              Créer une annonce
-            </button>
-            <button
-              type="button"
-              className="btn btn-donate"
-              onClick={() => navigate('/pay')}
-            >
-              💳 Soutenir le site (5€)
-            </button>
+            {isAuthenticated && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => navigate('/create')}
+                >
+                  Créer une annonce
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-donate"
+                  onClick={() => navigate('/pay')}
+                >
+                  💳 Soutenir le site (5€)
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -184,15 +242,45 @@ export default function Annonces() {
             {filtered.map((a) => {
               const isMyAnnonce = currentUserId === a.id_user;
               const isTaken = !!a.is_valide;
-              return(<article
+              return(              <article
                 key={a.id}
                 className={`annonce-card card ${isTaken ? 'annonce-card--taken' : ''}`}
               >
                 <div className="annonce-card-header">
                   <h2 className="annonce-card-title">{a.titre || 'Sans titre'}</h2>
-                  {a.prix != null && (
-                    <span className="annonce-card-prix">{a.prix} €</span>
-                  )}
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {a.prix != null && (
+                      <span className="annonce-card-prix">{a.prix} €</span>
+                    )}
+                    {(canEditAnnonce(a) || canDeleteAnnonce(a)) && (
+                      <div className="story-card-actions" style={{ marginLeft: '8px' }}>
+                        {canEditAnnonce(a) && (
+                          <button
+                            type="button"
+                            className="story-card-btn-edit"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(a);
+                            }}
+                          >
+                            Modifier
+                          </button>
+                        )}
+                        {canDeleteAnnonce(a) && (
+                          <button
+                            type="button"
+                            className="story-card-btn-delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(a.id);
+                            }}
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <p className="annonce-card-desc">
                   {a.description

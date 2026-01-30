@@ -64,6 +64,11 @@ export default function Navbar({ onSearchChange, onProfileClick }) {
           <Link to="/messages" className="navbar-link" onClick={handleLinkClick}>
             Messagerie
           </Link>
+          {isAuthenticated && localStorage.getItem('userRole') === 'admin' && (
+            <Link to="/admin" className="navbar-link" onClick={handleLinkClick}>
+              Admin
+            </Link>
+          )}
         </nav>
       </div>
 
@@ -125,6 +130,11 @@ export default function Navbar({ onSearchChange, onProfileClick }) {
           <Link to="/messages" className="navbar-drawer-link" onClick={handleLinkClick}>
             Messagerie
           </Link>
+          {isAuthenticated && localStorage.getItem('userRole') === 'admin' && (
+            <Link to="/admin" className="navbar-drawer-link" onClick={handleLinkClick}>
+              Admin
+            </Link>
+          )}
         </nav>
         <div className="navbar-drawer-search">
           <input

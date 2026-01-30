@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createStory, updateStory } from '../services/storyService';
+import { createAnnonceData, updateExistingAnnonce } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
 
 export default function StoryWrite({ story, onClose, onSuccess }) {
@@ -22,16 +22,17 @@ export default function StoryWrite({ story, onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      const storyData = {
-        title: title.trim(),
-        content: content.trim()
+      const annonceData = {
+        titre: title.trim(),
+        description: content.trim(),
+        id_user: localStorage.getItem('userId')
       };
 
       if (isEditMode) {
-        const storyId = story.id || story.story_id || story.id_story;
-        await updateStory(storyId, storyData);
+        const annonceId = story.id || story.story_id || story.id_story;
+        await updateExistingAnnonce(annonceId, annonceData);
       } else {
-        await createStory(storyData);
+        await createAnnonceData(annonceData);
       }
 
       if (onSuccess) {
@@ -42,7 +43,7 @@ export default function StoryWrite({ story, onClose, onSuccess }) {
       }
     } catch (err) {
       console.error('Erreur lors de la sauvegarde:', err);
-      setError(err.response?.data?.message || 'Une erreur est survenue lors de la sauvegarde.');
+      setError(err.response?.data?.error || err.response?.data?.message || 'Une erreur est survenue lors de la sauvegarde.');
     } finally {
       setLoading(false);
     }

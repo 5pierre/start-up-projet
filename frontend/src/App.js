@@ -22,6 +22,14 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const AuthProtectedRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem('userId');
+  if (!isAuthenticated) {
+    return <Navigate to="/register" replace />;
+  }
+  return children;
+};
+
 const App = () => {
 
   useEffect(() => {
@@ -52,11 +60,11 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/annonces" element={<Annonces />} />
         <Route path="/story" element={<StoryRead />} />
-        <Route path="/create" element={<CreateAnnonce />} />
+        <Route path="/create" element={<AuthProtectedRoute><CreateAnnonce /></AuthProtectedRoute>} />
         <Route path="/users/:id/comments" element={<UserComments />} />
         <Route path="/messages" element={<MessagingPage />} />
         <Route path="/messages/:id" element={<Messages />} />
-        <Route path="/pay" element={<Payment />} />
+        <Route path="/pay" element={<AuthProtectedRoute><Payment /></AuthProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>
     </Router>
