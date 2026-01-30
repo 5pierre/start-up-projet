@@ -41,7 +41,7 @@ export default function HomePage() {
           <div className="home-hero-inner">
             <p className="home-hero-badge">Plateforme d&apos;entraide</p>
             <h1 className="home-title">
-              Bienvenue sur les p&apos;tits vieux
+              Bienvenue sur pour les p&apos;tits vieux
             </h1>
             <p className="home-subtitle">
               Échangez, publiez des annonces et discutez avec une communauté
