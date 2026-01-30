@@ -248,7 +248,7 @@ export default function StoryRead() {
                 className="story-read-donate-btn"
                 onClick={() => navigate('/pay')}
               >
-                💳 Soutenir le site (5€)
+                Soutenir le site (5€)
               </button>
             </div>
           )}

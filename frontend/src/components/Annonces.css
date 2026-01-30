@@ -149,12 +149,12 @@
 }
 
 .annonce-contact-btn {
-  background: #4a90e2;
+  background: var(--color-primary);
   color: var(--color-surface);
 }
 
 .annonce-contact-btn:hover:not(:disabled) {
-  background: #357abd;
+  background: var(--color-primary-hover);
   box-shadow: var(--shadow-sm);
 }
 

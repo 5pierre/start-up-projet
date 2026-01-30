@@ -184,7 +184,7 @@ export default function Messages() {
                 className="btn btn-primary"
                 onClick={() => setShowRatePopup(true)}
               >
-                Noter ⭐
+                Noter
               </button>
             )}
           </div>
@@ -199,7 +199,7 @@ export default function Messages() {
           {annonce && (
             <div className="alert messages-annonce-alert">
               <strong>Annonce :</strong> {annonce.titre || `#${effectiveAnnonceId}`}{" "}
-              {annonce.is_valide ? "— ✅ déjà validée" : ""}
+              {annonce.is_valide ? "— déjà validée" : ""}
             </div>
           )}
 

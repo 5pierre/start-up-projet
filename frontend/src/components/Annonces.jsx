@@ -154,7 +154,7 @@ export default function Annonces() {
                   className="btn btn-donate"
                   onClick={() => navigate('/pay')}
                 >
-                  💳 Soutenir le site (5€)
+                  Soutenir le site (5€)
                 </button>
               </>
             )}
@@ -290,10 +290,10 @@ export default function Annonces() {
                     : 'Aucune description.'}
                 </p>
                 <div className="annonce-card-meta">
-                  {a.lieu && <span className="annonce-meta-item">📍 {a.lieu}</span>}
+                  {a.lieu && <span className="annonce-meta-item">{a.lieu}</span>}
                   {a.date_publication && (
                     <span className="annonce-meta-item">
-                      📅 {formatDate(a.date_publication)}
+                      {formatDate(a.date_publication)}
                     </span>
                   )}
                 </div>
@@ -302,7 +302,7 @@ export default function Annonces() {
                 )}
                 {isTaken && (
                   <p className="annonce-card-author" style={{ marginTop: 8, fontWeight: 700 }}>
-                    ✅ Annonce prise
+                    Annonce prise
                   </p>
                 )}
                 {!isMyAnnonce && currentUserId ? (

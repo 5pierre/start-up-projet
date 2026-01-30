@@ -54,7 +54,7 @@
 
 .story-read-donate-btn {
   padding: var(--space-md) var(--space-xl);
-  background: #4a90e2;
+  background: var(--color-primary);
   color: var(--color-surface);
   border: none;
   border-radius: var(--radius-md);
@@ -68,7 +68,7 @@
 }
 
 .story-read-donate-btn:hover {
-  background: #357abd;
+  background: var(--color-primary-hover);
   box-shadow: var(--shadow-md);
 }
 

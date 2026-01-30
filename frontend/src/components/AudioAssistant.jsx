@@ -31,7 +31,7 @@ export default function AudioAssistant({ onAnnonceGenerated }) {
 
         // Création du blob final
         if (isUploadingRef.current) {
-          console.log('⚠️ Upload déjà en cours, abandon de ce déclenchement');
+          console.log('Upload déjà en cours, abandon de ce déclenchement');
           return;
         }
         
@@ -65,29 +65,29 @@ export default function AudioAssistant({ onAnnonceGenerated }) {
   };
 
   const handleAudioUpload = async (audioBlob) => {
-    // ✅ Double protection au niveau de la fonction aussi
+    // Double protection au niveau de la fonction aussi
     if (isProcessing) {
-      console.log('⚠️ Traitement déjà en cours, requête ignorée');
+      console.log('Traitement déjà en cours, requête ignorée');
       return;
     }
     
     setIsProcessing(true);
     try {
-      console.log('📤 Envoi de l\'audio à l\'API...');
+      console.log('Envoi de l\'audio à l\'API...');
       const data = await generateAnnonceFromAudio(audioBlob);
 
-      console.log('✅ Réponse reçue:', data);
+      console.log('Réponse reçue:', data);
       
       if (onAnnonceGenerated) {
         onAnnonceGenerated(data);
       }
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('Erreur:', error);
       alert("Une erreur est survenue lors de l'analyse audio.");
 
     } finally {
       setIsProcessing(false);
-      isUploadingRef.current = false; // ✅ Libérer le flag
+      isUploadingRef.current = false; // Libérer le flag
     }
   };
 

@@ -52,7 +52,7 @@ export const generateAnnonceFromAudio = async (audioFile) => {
     const formData = new FormData();
     formData.append('audio', audioFile);
 
-    // ✅ Correction : utilise BASE_URL directement (la route est /api/from-audio)
+    // Correction : utilise BASE_URL directement (la route est /api/from-audio)
     const response = await axios.post(`${BASE_URL}/from-audio`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
