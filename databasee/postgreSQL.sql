@@ -128,5 +128,65 @@ FROM users u_rated
 JOIN users u_author ON u_author.email = 'auteur@example.com'
 WHERE u_rated.email = 'notee@example.com';
 
+-- Annonces pour l'utilisateur auteur@example.com
+WITH user_auteur AS (
+  SELECT id_user FROM users WHERE email = 'auteur@example.com' LIMIT 1
+)
+INSERT INTO annonces (titre, description, id_user, lieu, prix, date, photo, is_valide)
+SELECT
+  'Réparation de vélo',
+  'Je répare tous types de vélos : réglage des freins, changement de pneus, entretien général. Service rapide et professionnel.',
+  id_user,
+  'Lyon',
+  25.00,
+  CURRENT_DATE + INTERVAL '7 days',
+  NULL,
+  FALSE
+FROM user_auteur
+UNION ALL
+SELECT
+  'Cours de jardinage',
+  'Apprenez les bases du jardinage : plantation, arrosage, taille. Cours adaptés aux débutants. Matériel fourni.',
+  id_user,
+  'Lyon',
+  40.00,
+  CURRENT_DATE + INTERVAL '14 days',
+  NULL,
+  FALSE
+FROM user_auteur
+UNION ALL
+SELECT
+  'Aide aux courses pour personnes âgées',
+  'Service d''aide aux courses pour personnes à mobilité réduite. Respectueux et ponctuel. Disponible en semaine.',
+  id_user,
+  'Lyon',
+  15.00,
+  CURRENT_DATE + INTERVAL '3 days',
+  NULL,
+  FALSE
+FROM user_auteur
+UNION ALL
+SELECT
+  'Peinture de mur intérieur',
+  'Peinture professionnelle de vos murs intérieurs. Préparation du support incluse. Devis gratuit.',
+  id_user,
+  'Lyon',
+  200.00,
+  CURRENT_DATE + INTERVAL '10 days',
+  NULL,
+  FALSE
+FROM user_auteur
+UNION ALL
+SELECT
+  'Garde d''animaux',
+  'Garde de chiens et chats à domicile. Promenades, repas, jeux. Expérience de 5 ans.',
+  id_user,
+  'Lyon',
+  30.00,
+  CURRENT_DATE + INTERVAL '5 days',
+  NULL,
+  FALSE
+FROM user_auteur;
+
 
 

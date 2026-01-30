@@ -9,10 +9,16 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 const Key = process.env.JWT_SECRET;
 
+// Création du dossier uploads/avatars s'il n'existe pas
+const uploadsDir = path.join(__dirname, '../../uploads/avatars');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Configuration de Multer pour l'upload de la photo de profil
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../../uploads/avatars'));
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

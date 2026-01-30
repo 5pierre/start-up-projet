@@ -4,7 +4,15 @@ const authRoutes = require('./src/api/auth.routes');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet'); 
 const path = require('path');
+const fs = require('fs');
 const app = express();
+
+// Création du dossier uploads/avatars s'il n'existe pas
+const uploadsDir = path.join(__dirname, 'uploads/avatars');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('Dossier uploads/avatars créé');
+}
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
