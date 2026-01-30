@@ -7,7 +7,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import UserProfile from './UserProfile';
 import BackButton from './BackButton';
-import { getSingleAnnonce, validateAnnonce } from '../services/annonceService';
+import { getSingleAnnonce } from '../services/annonceService';
 import '../styles/RegisterStyle.css';
 import './Messages.css';
 
@@ -16,12 +16,17 @@ export default function Messages() {
   const user2Id = parseInt(id, 10);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const annonceIdRaw = searchParams.get('annonceId');
-  const annonceId = annonceIdRaw ? Number.parseInt(annonceIdRaw, 10) : null;
-  const [conversationAnnonceId, setConversationAnnonceId] = useState(null);
-  const effectiveAnnonceId = annonceId || conversationAnnonceId;
   
-  // Récupération de l'ID connecté pour vérifier les permissions de notation
+  // ID provenant de l'URL (prioritaire)
+  const annonceIdRaw = searchParams.get('annonceId');
+  const urlAnnonceId = annonceIdRaw ? Number.parseInt(annonceIdRaw, 10) : null;
+  
+  // ID provenant de la conversation (historique ou nouveau message)
+  const [conversationAnnonceId, setConversationAnnonceId] = useState(null);
+  
+  // L'ID effectif est celui de l'URL s'il existe, sinon celui de la conversation
+  const effectiveAnnonceId = urlAnnonceId || conversationAnnonceId;
+  
   const currentUserId = parseInt(localStorage.getItem('userId'), 10);
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');
@@ -29,14 +34,13 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [annonce, setAnnonce] = useState(null);
-  const [annonceStatus, setAnnonceStatus] = useState(null); // message success/error
+  const [annonceStatus, setAnnonceStatus] = useState(null);
   
-  // État pour le Popup de notation
   const [showRatePopup, setShowRatePopup] = useState(false);
   
-  // 1. Charger l'historique (via API REST)
   const messagesEndRef = useRef(null);
 
+  // 1. Charger l'historique
   const loadMessages = useCallback(async () => {
     if (!user2Id) return;
     try {
@@ -44,10 +48,15 @@ export default function Messages() {
       const data = await getMessages(user2Id);
       const msgs = data.messages || [];
       setMessages(msgs);
-      if (!annonceId) {
-        const firstAnnonceId = msgs.find((m) => m.annonce_id)?.annonce_id || null;
-        if (firstAnnonceId && Number.isInteger(firstAnnonceId)) {
-          setConversationAnnonceId(firstAnnonceId);
+      
+      // Si pas d'ID dans l'URL, on cherche le sujet le plus RÉCENT dans l'historique
+      if (!urlAnnonceId) {
+        // On inverse pour chercher depuis la fin (le plus récent)
+        const lastMsgWithAnnonce = [...msgs].reverse().find((m) => m.annonce_id);
+        const lastAnnonceId = lastMsgWithAnnonce?.annonce_id || null;
+        
+        if (lastAnnonceId && Number.isInteger(lastAnnonceId)) {
+          setConversationAnnonceId(lastAnnonceId);
         }
       }
       setError(null);
@@ -57,16 +66,24 @@ export default function Messages() {
     } finally {
       setLoading(false);
     }
-  }, [user2Id, annonceId]);
+  }, [user2Id, urlAnnonceId]);
 
   useEffect(() => {
     loadMessages();
   }, [loadMessages]);
 
-  // Charger les infos de l'annonce si on est dans une discussion liée à une annonce
+  // Charger les infos de l'annonce quand l'ID effectif change
   useEffect(() => {
     const loadAnnonce = async () => {
-      if (!effectiveAnnonceId || Number.isNaN(effectiveAnnonceId) || effectiveAnnonceId <= 0) return;
+      // Si pas d'annonce ou ID invalide, on vide l'annonce affichée
+      if (!effectiveAnnonceId || Number.isNaN(effectiveAnnonceId) || effectiveAnnonceId <= 0) {
+        setAnnonce(null);
+        return;
+      }
+      
+      // Petite optimisation : si on a déjà la bonne annonce chargée, on évite l'appel
+      if (annonce && annonce.id === effectiveAnnonceId) return;
+
       try {
         const res = await getSingleAnnonce(effectiveAnnonceId);
         setAnnonce(res.annonce || null);
@@ -76,7 +93,7 @@ export default function Messages() {
       }
     };
     loadAnnonce();
-  }, [effectiveAnnonceId]);
+  }, [effectiveAnnonceId, annonce]);
 
   // 2. Gestion WebSocket
   useEffect(() => {
@@ -89,6 +106,12 @@ export default function Messages() {
         newMessage.id_user_2 === user2Id
       ) {
         setMessages((prev) => [...prev, newMessage]);
+        
+        // CORRECTION ICI : Si le nouveau message concerne une annonce, on met à jour le contexte
+        // Cela permet au vendeur de voir le titre changer instantanément
+        if (newMessage.annonce_id) {
+          setConversationAnnonceId(newMessage.annonce_id);
+        }
       }
     });
 
@@ -100,51 +123,36 @@ export default function Messages() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 4. Envoyer un message (WebSocket)
+  // 4. Envoyer un message
   const handleSend = (e) => {
     e.preventDefault();
     if (!content.trim()) return;
 
     const socket = getSocket();
     if (socket) {
-      socket.emit('send_message', {
+      const msgData = {
         toUserId: user2Id,
         content: content.trim(),
         annonceId: effectiveAnnonceId || undefined
-      });
+      };
+      
+      socket.emit('send_message', msgData);
+      
+      // Optionnel : On fixe le contexte localement pour être sûr qu'il reste affiché
+      if (effectiveAnnonceId) {
+        setConversationAnnonceId(effectiveAnnonceId);
+      }
+      
       setContent('');
     } else {
       setError('Connexion au chat indisponible.');
     }
   };
 
-  // Logique pour savoir si on peut noter (Connecté + Pas soi-même)
   const canRate = currentUserId && user2Id && currentUserId !== user2Id;
+  
+  // Validation de l'annonce (seulement si je suis l'auteur de l'annonce)
 
-  const canValidateAnnonce =
-    annonce &&
-    !annonce.is_valide &&
-    Number.isInteger(currentUserId) &&
-    currentUserId > 0 &&
-    currentUserId === annonce.id_user &&
-    Number.isInteger(user2Id) &&
-    user2Id > 0 &&
-    user2Id !== currentUserId;
-
-  const handleValidateAnnonce = async () => {
-    if (!annonce || !effectiveAnnonceId) return;
-    try {
-      setAnnonceStatus(null);
-      const res = await validateAnnonce(effectiveAnnonceId);
-      setAnnonce(res.annonce || null);
-      setAnnonceStatus({ type: 'success', text: "Annonce validée. Elle apparaîtra grisée dans la liste." });
-    } catch (err) {
-      const msg = err.response?.data?.error || "Erreur lors de la validation de l'annonce.";
-      setAnnonceStatus({ type: 'error', text: msg });
-    }
-  };
-
-  // Essayer de trouver le nom de l'interlocuteur pour un affichage plus sympa
   const targetUserName =
     messages.find(
       (m) => m.id_user_1 === user2Id || m.id_user_2 === user2Id
@@ -166,40 +174,21 @@ export default function Messages() {
               Discussion avec {targetUserName}
             </h1>
 
-            {/* Bouton Valider l'annonce (visible seulement pour le destinataire: l'auteur de l'annonce) */}
-            {canValidateAnnonce && (
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={handleValidateAnnonce}
-              >
-                Valider l'annonce
-              </button>
-            )}
-
-            {/* Bouton Noter */}
             {canRate && (
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={() => setShowRatePopup(true)}
+                style={{ marginLeft: '10px' }}
               >
                 Noter
               </button>
             )}
           </div>
 
-          {/* Affichage des erreurs */}
           {error && (
             <div className="alert alert-error messages-alert">
               {error}
-            </div>
-          )}
-
-          {annonce && (
-            <div className="alert messages-annonce-alert">
-              <strong>Annonce :</strong> {annonce.titre || `#${effectiveAnnonceId}`}{" "}
-              {annonce.is_valide ? "— déjà validée" : ""}
             </div>
           )}
 
@@ -209,7 +198,6 @@ export default function Messages() {
             </div>
           )}
 
-          {/* Chargement */}
           {loading && (
             <div className="messages-loading">Chargement…</div>
           )}
@@ -217,6 +205,17 @@ export default function Messages() {
           {/* ZONE DE CHAT */}
           {!loading && (
             <div className="messages-chat">
+              
+              {/* BANDEAU CONTEXTE (TITRE ANNONCE) */}
+              {annonce && (
+                <div className="context-separator">
+                  <div className="context-badge">
+                    Contexte : <strong>{annonce.titre}</strong>
+                    {annonce.is_valide && <span style={{fontStyle:'italic', marginLeft:'5px'}}> (Déjà validée)</span>}
+                  </div>
+                </div>
+              )}
+
               {messages.length === 0 ? (
                 <div className="messages-chat-empty">
                   Aucun message. Commencez la conversation !

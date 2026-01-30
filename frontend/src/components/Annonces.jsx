@@ -6,7 +6,7 @@ import UserProfile from './UserProfile';
 import BackButton from './BackButton';
 import '../styles/RegisterStyle.css';
 import './Annonces.css';
-import { getAllAnnonces, deleteExistingAnnonce, updateExistingAnnonce } from '../services/annonceService';
+import { getAllAnnonces, deleteExistingAnnonce, updateExistingAnnonce, validateAnnonce } from '../services/annonceService';
 import StoryWrite from './StoryWrite';
 
 export default function Annonces() {
@@ -100,6 +100,23 @@ export default function Annonces() {
     } catch (err) {
       console.error('Erreur suppression annonce:', err);
       alert(err.response?.data?.error || 'Erreur lors de la suppression de l\'annonce.');
+    }
+  };
+  
+
+  const handleValidate = async (annonceId) => {
+    if (!window.confirm("Confirmer la validation de l'annonce ? Elle sera marquée comme 'Prise'.")) {
+      return;
+    }
+    try {
+      // On appelle le service de validation
+      await validateAnnonce(annonceId);
+      // On recharge la liste pour voir le changement de statut (grisé/Prise)
+      const data = await getAllAnnonces();
+      setAnnonces(data.annonces || []);
+    } catch (err) {
+      console.error('Erreur validation annonce:', err);
+      alert(err.response?.data?.error || "Erreur lors de la validation de l'annonce.");
     }
   };
 
@@ -287,6 +304,27 @@ export default function Annonces() {
                       Contacter le vendeur
                     </button>
                   )}
+
+                  {/* Bouton Valider : visible seulement si c'est mon annonce et qu'elle n'est pas déjà validée */}
+                  {isMyAnnonce && !isTaken && (
+                    <button
+                      type="button"
+                      className="story-card-btn-edit" 
+                      style={{ 
+                        backgroundColor: '#28a745', 
+                        borderColor: '#28a745', 
+                        color: '#fff',
+                        marginRight: '5px' 
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleValidate(a.id);
+                      }}
+                    >
+                      Valider
+                    </button>
+                  )}
+
                   {(canEditAnnonce(a) || canDeleteAnnonce(a)) && (
                     <div className="story-card-actions">
                       {canEditAnnonce(a) && (
