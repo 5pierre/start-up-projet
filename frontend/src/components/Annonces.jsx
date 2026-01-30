@@ -248,39 +248,9 @@ export default function Annonces() {
               >
                 <div className="annonce-card-header">
                   <h2 className="annonce-card-title">{a.titre || 'Sans titre'}</h2>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {a.prix != null && (
-                      <span className="annonce-card-prix">{a.prix} €</span>
-                    )}
-                    {(canEditAnnonce(a) || canDeleteAnnonce(a)) && (
-                      <div className="story-card-actions" style={{ marginLeft: '8px' }}>
-                        {canEditAnnonce(a) && (
-                          <button
-                            type="button"
-                            className="story-card-btn-edit"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(a);
-                            }}
-                          >
-                            Modifier
-                          </button>
-                        )}
-                        {canDeleteAnnonce(a) && (
-                          <button
-                            type="button"
-                            className="story-card-btn-delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(a.id);
-                            }}
-                          >
-                            Supprimer
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {a.prix != null && (
+                    <span className="annonce-card-prix">{a.prix} €</span>
+                  )}
                 </div>
                 <p className="annonce-card-desc">
                   {a.description
@@ -305,18 +275,47 @@ export default function Annonces() {
                     Annonce prise
                   </p>
                 )}
-                {!isMyAnnonce && currentUserId ? (
-                      <button
-                        type="button"
-                        className="btn btn-donate annonce-contact-btn"
-                        onClick={() => {
-                          if (isTaken) return;
-                          navigate(`/messages/${a.id_user}?annonceId=${a.id}`);
-                        }}
-                        disabled={isTaken}
-                      >
-                        {isTaken ? 'Annonce déjà prise' : 'Contacter le vendeur'}
-                      </button>) : (null)}
+                <div className="annonce-card-actions-bottom">
+                  {!isMyAnnonce && currentUserId && !isTaken && (
+                    <button
+                      type="button"
+                      className="btn btn-donate annonce-contact-btn"
+                      onClick={() => {
+                        navigate(`/messages/${a.id_user}?annonceId=${a.id}`);
+                      }}
+                    >
+                      Contacter le vendeur
+                    </button>
+                  )}
+                  {(canEditAnnonce(a) || canDeleteAnnonce(a)) && (
+                    <div className="story-card-actions">
+                      {canEditAnnonce(a) && (
+                        <button
+                          type="button"
+                          className="story-card-btn-edit"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(a);
+                          }}
+                        >
+                          Modifier
+                        </button>
+                      )}
+                      {canDeleteAnnonce(a) && (
+                        <button
+                          type="button"
+                          className="story-card-btn-delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(a.id);
+                          }}
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </article>
               );
 })}

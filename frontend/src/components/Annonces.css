@@ -232,11 +232,20 @@
 }
 
 /* Styles pour les boutons modifier/supprimer dans les cartes d'annonces */
+.annonce-card-actions-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  flex-wrap: wrap;
+}
+
 .annonce-card .story-card-actions {
   display: flex;
   gap: var(--space-sm);
-  margin-left: var(--space-md);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .annonce-card .story-card-btn-edit {
